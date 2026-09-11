@@ -1,11 +1,114 @@
 /* Remove default spinner styling for WebKit-based browsers (Chrome, Edge, Safari) */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none; /* Remove spinner appearance */
-  margin: 0; /* Remove margin */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Remove spinner appearance */
+    margin: 0; /* Remove margin */
 }
 
 /* Remove default spinner styling for Firefox */
-input[type="number"] {
-  -moz-appearance: textfield; /* Remove spinner in Firefox */
+input[type='number'] {
+    -moz-appearance: textfield; /* Remove spinner in Firefox */
+}
+
+html,
+body,
+#root {
+    min-height: 100%;
+    margin: 0;
+}
+
+.home-page {
+    box-sizing: border-box;
+    min-height: 100vh;
+    width: 100%;
+    padding: clamp(2rem, 6vw, 5rem);
+    color: #172033;
+    background: #eef2f6;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.home-page__eyebrow {
+    margin: 0 0 0.5rem;
+    color: #52657d;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.home-page h1 {
+    max-width: 52rem;
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 4.25rem);
+    line-height: 1;
+}
+
+.home-page__intro {
+    margin: 1rem 0 2.5rem;
+    color: #52657d;
+    font-size: 1.05rem;
+}
+
+.page-directory {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.8rem;
+    max-width: 70rem;
+    padding: 0;
+    list-style: none;
+}
+
+.page-directory a {
+    min-height: 8.5rem;
+    display: block;
+    padding: 1.25rem;
+    border: 1px solid #cfd7e2;
+    border-radius: 0.75rem;
+    color: inherit;
+    background: white;
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(28, 39, 54, 0.06);
+}
+
+.page-directory a:hover,
+.page-directory a:focus-visible {
+    background: #f8fafc;
+    border-color: #8796aa;
+}
+
+.page-directory a span,
+.page-directory a strong,
+.page-directory a small {
+    display: block;
+}
+
+.page-directory a span {
+    margin-bottom: 0.7rem;
+    color: #68798e;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.page-directory a strong {
+    margin-bottom: 0.55rem;
+}
+
+.page-directory a small {
+    color: #657387;
+    line-height: 1.4;
+}
+
+.exercise-page {
+    display: grid;
+    box-sizing: border-box;
+    min-height: 100vh;
+    width: 100%;
+    place-items: center;
+    padding: 2rem;
+}
+
+.exercise-page h1 {
+    margin: 0;
 }
