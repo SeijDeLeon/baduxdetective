@@ -45,7 +45,9 @@ jobs:
                   fi
 
             - name: Build website
-              run: npm run build:pages -- --base="$PAGES_BASE_PATH"
+              run: |
+                  npx tsc
+                  npx vite build --mode github-pages --base="$PAGES_BASE_PATH"
 
             - name: Add client-side routing fallback
               run: |

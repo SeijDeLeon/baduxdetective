@@ -12,6 +12,7 @@ import Page5 from './pages/Page5';
 import Page6 from './pages/Page6';
 import Page7 from './pages/Page7';
 import Page8 from './pages/Page8';
+import PatternTrainingPage from './pages/PatternTrainingPage';
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/page-6" element={<Page6 />} />
             <Route path="/page-7" element={<Page7 />} />
             <Route path="/page-8" element={<Page8 />} />
+            <Route path="/pattern-training" element={<PatternTrainingPage />} />
         </Routes>
     );
 }

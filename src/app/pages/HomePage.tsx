@@ -30,6 +30,13 @@ export default function HomePage() {
                             </Link>
                         </li>
                     ))}
+                    <li>
+                        <Link to="/pattern-training">
+                            <span>Training</span>
+                            <strong>Pattern Training</strong>
+                            <small>Practice recognizing 20 common bad interaction patterns.</small>
+                        </Link>
+                    </li>
                 </ul>
             </nav>
         </main>
