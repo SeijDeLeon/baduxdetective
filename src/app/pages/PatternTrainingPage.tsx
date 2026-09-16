@@ -1,4 +1,6 @@
-import { useState, type ComponentType, type DragEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ComponentType, type DragEvent, type FormEvent } from 'react';
+
+import PlotlyHeatmap from '@/components/PlotlyHeatmap';
 
 import './PatternTrainingPage.css';
 
@@ -21,9 +23,9 @@ function WeakInteractionAffordance() {
         <DemoFrame title="Weak Interaction Affordance">
             <h2>Beamline Scan</h2>
             <p>Energy range: 8.0–12.0 keV</p>
-            <span className="bad-text-button" onClick={() => setStarted(true)}>
+            <button className="bad-text-button" onClick={() => setStarted(true)}>
                 Start Scan
-            </span>
+            </button>
             {started && <p>Scan started.</p>}
         </DemoFrame>
     );
@@ -68,45 +70,99 @@ function EqualDestructiveEmphasis() {
     );
 }
 
-function GenericButtonLabels() {
+function InconsistentButtonLabels() {
+    const [values, setValues] = useState({ x: '2.5', y: '1.2', z: '8.0', velocity: '0.5' });
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [message, setMessage] = useState('');
+
+    const controls = [
+        { id: 'x', label: 'Position X', unit: 'mm', action: 'Move X' },
+        { id: 'y', label: 'Position Y', unit: 'mm', action: 'Move Y' },
+        { id: 'z', label: 'Position Z', unit: 'mm', action: 'Set Z' },
+        { id: 'velocity', label: 'Velocity', unit: 'mm/s', action: 'Set Velocity' },
+    ] as const;
+
+    function submitControl(event: FormEvent, control: (typeof controls)[number]) {
+        event.preventDefault();
+        if (!values[control.id].trim()) {
+            setErrors((current) => ({ ...current, [control.id]: `${control.label} is required.` }));
+            setMessage('');
+            return;
+        }
+        setErrors((current) => ({ ...current, [control.id]: '' }));
+        setMessage(`${control.label} updated.`);
+    }
+
     return (
-        <DemoFrame title="Generic Button Labels">
-            <form
-                className="bad-form"
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    setMessage('Your changes were processed.');
-                }}
-            >
-                <h2>Motor Options</h2>
-                <label>
-                    Velocity <input type="number" defaultValue="2.5" />
-                </label>
-                <button>Submit</button>
-                {message && (
-                    <div className="bad-dialog">
-                        <p>{message}</p>
-                        <button type="button" onClick={() => setMessage('')}>
-                            OK
-                        </button>
-                    </div>
-                )}
-            </form>
+        <DemoFrame title="Inconsistent Button Labels">
+            <div className="bad-form motor-controller-form">
+                <h2>Motor Controller</h2>
+                {controls.map((control) => (
+                    <form
+                        className="motor-control-row"
+                        onSubmit={(event) => submitControl(event, control)}
+                        key={control.id}
+                    >
+                        <label>
+                            {control.label}
+                            <span className="input-with-unit">
+                                <input
+                                    type="number"
+                                    value={values[control.id]}
+                                    aria-invalid={Boolean(errors[control.id])}
+                                    onChange={(event) => {
+                                        setValues((current) => ({
+                                            ...current,
+                                            [control.id]: event.target.value,
+                                        }));
+                                        setErrors((current) => ({
+                                            ...current,
+                                            [control.id]: '',
+                                        }));
+                                    }}
+                                />
+                                <span>{control.unit}</span>
+                            </span>
+                            {errors[control.id] && (
+                                <span className="field-error">{errors[control.id]}</span>
+                            )}
+                        </label>
+                        <button className="generic-submit-button">{control.action}</button>
+                    </form>
+                ))}
+                {message && <p className="motor-controller-message">{message}</p>}
+            </div>
         </DemoFrame>
     );
 }
 
-function MysteryIconButton() {
+function BadHoverInteractions() {
     const [action, setAction] = useState('Select a toolbar action.');
+    const [selected, setSelected] = useState('');
+    const actions = [
+        { icon: '⚙︎', message: 'Settings opened' },
+        { icon: '↻', message: 'Refreshed' },
+        { icon: '⤓', message: 'Downloaded' },
+        { icon: '⋮', message: 'More opened' },
+    ];
+
     return (
-        <DemoFrame title="Mystery Icon Button">
+        <DemoFrame title="Bad Hover Interactions">
             <h2>Run Controls</h2>
             <div className="mystery-toolbar">
-                <button onClick={() => setAction('Settings opened')}>⚙</button>
-                <button onClick={() => setAction('Refreshed')}>↻</button>
-                <button onClick={() => setAction('Downloaded')}>⤓</button>
-                <button onClick={() => setAction('More opened')}>⋮</button>
+                {actions.map((item) => (
+                    <button
+                        className={selected === item.message ? 'selected' : ''}
+                        onClick={() => {
+                            setSelected(item.message);
+                            setAction(item.message);
+                        }}
+                        aria-pressed={selected === item.message}
+                        key={item.message}
+                    >
+                        {item.icon}
+                    </button>
+                ))}
             </div>
             <p>{action}</p>
         </DemoFrame>
@@ -114,21 +170,37 @@ function MysteryIconButton() {
 }
 
 function HiddenClickableThing() {
-    const [open, setOpen] = useState(false);
+    const [selectedDetector, setSelectedDetector] = useState<'Pilatus 2M' | 'Eiger X 4M' | null>(
+        null,
+    );
     return (
         <DemoFrame title="Clickable Thing Doesn't Look Clickable">
             <h2>Connected Detectors</h2>
-            <p className="plain-clickable" onClick={() => setOpen(true)}>
+            <p
+                className={`plain-clickable ${selectedDetector === 'Pilatus 2M' ? 'open' : ''}`}
+                onClick={() => setSelectedDetector('Pilatus 2M')}
+            >
                 Pilatus 2M
             </p>
-            <p>Eiger X 4M</p>
-            {open && (
+            <p
+                className={`plain-clickable ${selectedDetector === 'Eiger X 4M' ? 'open' : ''}`}
+                onClick={() => setSelectedDetector('Eiger X 4M')}
+            >
+                Eiger X 4M
+            </p>
+            {selectedDetector && (
                 <div className="bad-panel">
-                    <h3>Pilatus 2M Settings</h3>
-                    <label>
-                        Threshold <input defaultValue="4.5 keV" />
-                    </label>
-                    <button onClick={() => setOpen(false)}>Close</button>
+                    <h3>{selectedDetector} Settings</h3>
+                    {selectedDetector === 'Pilatus 2M' ? (
+                        <label>
+                            Threshold <input defaultValue="4.5 keV" />
+                        </label>
+                    ) : (
+                        <label>
+                            Frame time <input defaultValue="0.1 s" />
+                        </label>
+                    )}
+                    <button onClick={() => setSelectedDetector(null)}>Close</button>
                 </div>
             )}
         </DemoFrame>
@@ -142,10 +214,13 @@ function NoActionFeedback() {
             <div className="bad-form">
                 <h2>Scan Settings</h2>
                 <label>
-                    Exposure time{' '}
+                    Exposure time (s)
                     <input value={value} onChange={(event) => setValue(event.target.value)} />
                 </label>
-                <button onClick={() => window.setTimeout(() => undefined, 3000)}>
+                <button
+                    className="generic-submit-button"
+                    onClick={() => window.setTimeout(() => undefined, 3000)}
+                >
                     Save Settings
                 </button>
             </div>
@@ -153,34 +228,218 @@ function NoActionFeedback() {
     );
 }
 
-function DoubleSubmissionAllowed() {
-    const [queue, setQueue] = useState<string[]>([]);
-    function add() {
-        window.setTimeout(() => setQueue((items) => [...items, 'Cu calibration scan']), 900);
-    }
+const heatmapSlices = Array.from({ length: 3 }, (_, slice) =>
+    Array.from({ length: 22 }, (_, row) =>
+        Array.from({ length: 30 }, (_, column) => {
+            const peakX = 7 + slice * 7;
+            const peakY = 7 + slice * 3;
+            const distance =
+                ((column - peakX) * (column - peakX)) / 38 + ((row - peakY) * (row - peakY)) / 24;
+            const secondaryDistance =
+                ((column - (24 - slice * 4)) * (column - (24 - slice * 4))) / 22 +
+                ((row - (16 - slice * 3)) * (row - (16 - slice * 3))) / 18;
+            return Math.round(
+                Math.min(255, 18 + 225 * Math.exp(-distance) + 105 * Math.exp(-secondaryDistance)),
+            );
+        }),
+    ),
+);
+
+function DelayedHeatmapFeedback() {
+    const [selectedSlice, setSelectedSlice] = useState(0);
+    const [displayedSlice, setDisplayedSlice] = useState(0);
+
+    useEffect(() => {
+        const timeout = window.setTimeout(() => setDisplayedSlice(selectedSlice), 1000);
+        return () => window.clearTimeout(timeout);
+    }, [selectedSlice]);
+
     return (
-        <DemoFrame title="Double-Submission Allowed">
-            <h2>Scan Queue</h2>
-            <button onClick={add}>Add to Queue</button>
-            <ol>
-                {queue.map((item, index) => (
-                    <li key={`${item}-${index}`}>{item}</li>
-                ))}
-            </ol>
+        <DemoFrame title="No Feedback During Loading">
+            <div className="heatmap-pattern">
+                <h2>Tomography Preview</h2>
+                <div className="training-heatmap-frame">
+                    <PlotlyHeatmap
+                        array={heatmapSlices[displayedSlice]}
+                        colorScale="Viridis"
+                        showScale
+                        showTicks
+                        tickStep={5}
+                        xAxisTitle="Detector X"
+                        yAxisTitle="Detector Y"
+                        lockPlotHeightToParent
+                        className="training-heatmap"
+                    />
+                </div>
+                <label className="slice-control" htmlFor="heatmap-slice">
+                    <span>Slice {selectedSlice + 1}</span>
+                    <input
+                        id="heatmap-slice"
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="1"
+                        value={selectedSlice}
+                        onChange={(event) => setSelectedSlice(Number(event.target.value))}
+                    />
+                    <span className="slice-ticks" aria-hidden="true">
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                    </span>
+                </label>
+            </div>
         </DemoFrame>
     );
 }
 
-function DisabledWithoutExplanation() {
+function BadHeatmapLayoutShift() {
+    const [selectedSlice, setSelectedSlice] = useState(0);
+    const [displayedSlice, setDisplayedSlice] = useState(0);
+    const [heatmapVisible, setHeatmapVisible] = useState(true);
+
+    useEffect(() => {
+        if (selectedSlice === displayedSlice) return;
+
+        setHeatmapVisible(false);
+        const timeout = window.setTimeout(() => {
+            setDisplayedSlice(selectedSlice);
+            setHeatmapVisible(true);
+        }, 1000);
+        return () => window.clearTimeout(timeout);
+    }, [displayedSlice, selectedSlice]);
+
     return (
-        <DemoFrame title="Disabled With No Explanation">
-            <h2>New Scan</h2>
-            <label>
-                Exposure <input defaultValue="1.0" /> seconds
-            </label>
-            <div>
-                <button disabled>Start Scan</button>
+        <DemoFrame title="Bad Layout Shifts">
+            <div className="heatmap-pattern">
+                <h2>Tomography Preview</h2>
+                {heatmapVisible && (
+                    <div className="training-heatmap-frame">
+                        <PlotlyHeatmap
+                            array={heatmapSlices[displayedSlice]}
+                            colorScale="Viridis"
+                            showScale
+                            showTicks
+                            tickStep={5}
+                            xAxisTitle="Detector X"
+                            yAxisTitle="Detector Y"
+                            lockPlotHeightToParent
+                            className="training-heatmap"
+                        />
+                    </div>
+                )}
+                <label className="slice-control" htmlFor="layout-shift-heatmap-slice">
+                    <span>Slice {selectedSlice + 1}</span>
+                    <input
+                        id="layout-shift-heatmap-slice"
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="1"
+                        value={selectedSlice}
+                        onChange={(event) => setSelectedSlice(Number(event.target.value))}
+                    />
+                    <span className="slice-ticks" aria-hidden="true">
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                    </span>
+                </label>
             </div>
+        </DemoFrame>
+    );
+}
+
+function MissingDisabledState() {
+    const [engineMessage, setEngineMessage] = useState('');
+    return (
+        <DemoFrame title="Missing Disabled State">
+            <div className="bad-form scan-engine-form">
+                <h2>New Scan</h2>
+                <label>
+                    Scan name <input defaultValue="Ni K-edge" />
+                </label>
+                <label>
+                    Detector
+                    <select defaultValue="Pilatus 2M">
+                        <option>Pilatus 2M</option>
+                        <option>Eiger X 4M</option>
+                    </select>
+                </label>
+                <label>
+                    Start energy (keV) <input type="number" defaultValue="8.1" />
+                </label>
+                <label>
+                    Stop energy (keV) <input type="number" defaultValue="8.6" />
+                </label>
+                <label>
+                    Exposure time (s) <input type="number" defaultValue="1.0" />
+                </label>
+                <button
+                    className="generic-submit-button"
+                    type="button"
+                    onClick={() => setEngineMessage('Scan Engine Busy')}
+                >
+                    Start Scan
+                </button>
+                {engineMessage && <p className="scan-engine-message">{engineMessage}</p>}
+            </div>
+        </DemoFrame>
+    );
+}
+
+function HiddenRequiredField() {
+    const [scanName, setScanName] = useState('');
+    const [error, setError] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+
+    function submitScan(event: FormEvent) {
+        event.preventDefault();
+        if (!scanName.trim()) {
+            setError('Scan name is required.');
+            setSubmitted(false);
+            return;
+        }
+        setError('');
+        setSubmitted(true);
+    }
+
+    return (
+        <DemoFrame title="Required Field Revealed After Submit">
+            <form className="bad-form scan-engine-form" onSubmit={submitScan}>
+                <h2>New Scan</h2>
+                <label>
+                    Scan name
+                    <input
+                        value={scanName}
+                        aria-invalid={Boolean(error)}
+                        onChange={(event) => {
+                            setScanName(event.target.value);
+                            setError('');
+                            setSubmitted(false);
+                        }}
+                    />
+                    {error && <span className="field-error">{error}</span>}
+                </label>
+                <label>
+                    Detector
+                    <select defaultValue="Pilatus 2M">
+                        <option>Pilatus 2M</option>
+                        <option>Eiger X 4M</option>
+                    </select>
+                </label>
+                <label>
+                    Start energy (keV) <input type="number" defaultValue="8.1" />
+                </label>
+                <label>
+                    Stop energy (keV) <input type="number" defaultValue="8.6" />
+                </label>
+                <label>
+                    Exposure time (s) <input type="number" defaultValue="1.0" />
+                </label>
+                <button className="generic-submit-button">Start Scan</button>
+                {submitted && <p className="scan-submission-message">Scan submitted</p>}
+            </form>
         </DemoFrame>
     );
 }
@@ -188,15 +447,16 @@ function DisabledWithoutExplanation() {
 function DangerousActionNoRecovery() {
     const [rows, setRows] = useState(['Sample alignment', 'XANES scan', 'Dark frame']);
     return (
-        <DemoFrame title="Dangerous Action With No Recovery">
+        <DemoFrame title="Unexpected Delete">
             <h2>Queue</h2>
             <ul className="delete-list">
                 {rows.map((row) => (
-                    <li key={row}>
+                    <li
+                        onClick={() => setRows((items) => items.filter((item) => item !== row))}
+                        key={row}
+                    >
                         <span>{row}</span>
-                        <button
-                            onClick={() => setRows((items) => items.filter((item) => item !== row))}
-                        >
+                        <button type="button" aria-label={`Delete ${row}`}>
                             🗑
                         </button>
                     </li>
@@ -475,13 +735,15 @@ const patterns: Pattern[] = [
     { title: 'Weak Interaction Affordance', component: WeakInteractionAffordance },
     { title: 'Ambiguous Confirmation Actions', component: AmbiguousConfirmationActions },
     { title: 'Destructive Action Has Equal Emphasis', component: EqualDestructiveEmphasis },
-    { title: 'Generic Button Labels', component: GenericButtonLabels },
-    { title: 'Mystery Icon Button', component: MysteryIconButton },
+    { title: 'Inconsistent Button Labels', component: InconsistentButtonLabels },
+    { title: 'Bad Hover Interactions', component: BadHoverInteractions },
     { title: "Clickable Thing Doesn't Look Clickable", component: HiddenClickableThing },
     { title: 'No Feedback After an Action', component: NoActionFeedback },
-    { title: 'Double-Submission Allowed', component: DoubleSubmissionAllowed },
-    { title: 'Disabled With No Explanation', component: DisabledWithoutExplanation },
-    { title: 'Dangerous Action With No Recovery', component: DangerousActionNoRecovery },
+    { title: 'No Feedback During Loading', component: DelayedHeatmapFeedback },
+    { title: 'Bad Layout Shifts', component: BadHeatmapLayoutShift },
+    { title: 'Missing Disabled State', component: MissingDisabledState },
+    { title: 'Required Field Revealed After Submit', component: HiddenRequiredField },
+    { title: 'Unexpected Delete', component: DangerousActionNoRecovery },
     { title: 'Placeholder Used as the Label', component: PlaceholderAsLabel },
     { title: 'Vague Error Message', component: VagueErrorMessage },
     { title: 'Error Is Far From the Problem', component: ErrorFarFromProblem },

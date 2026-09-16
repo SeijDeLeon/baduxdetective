@@ -53,8 +53,18 @@
     gap: 5px;
 }
 .bad-text-button {
-    color: inherit;
+    padding: 10px 20px !important;
+    border: 1px solid #1769aa !important;
+    border-radius: 9px !important;
+    color: #fff;
+    background: #1976c8 !important;
+    cursor: default;
     user-select: none;
+}
+.bad-text-button:hover {
+    color: #fff;
+    border-color: #1769aa;
+    background: #1976c8;
 }
 .bad-dialog,
 .bad-panel {
@@ -91,6 +101,58 @@
     display: grid;
     gap: 5px;
 }
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.input-with-unit input {
+    flex: 1;
+}
+.field-error {
+    color: #b00000;
+    font-size: 14px;
+}
+.pattern-demo .generic-submit-button {
+    width: fit-content;
+    padding: 6px 12px;
+    color: #fff;
+    border-color: #1769aa;
+    background: #1976c8;
+}
+.motor-controller-form {
+    width: min(540px, 100%);
+    max-width: none;
+}
+.motor-control-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    gap: 12px;
+    align-items: end;
+    padding: 12px;
+    border: 1px solid #d3d7dc;
+    background: #f7f8fa;
+}
+.motor-control-row .generic-submit-button {
+    width: 120px;
+    margin-bottom: 1px;
+}
+.motor-controller-message {
+    margin: 0;
+}
+.scan-engine-form select {
+    width: 100%;
+}
+.scan-engine-message {
+    margin: -4px 0 0;
+    color: #b00000;
+    font-weight: 700;
+}
+.scan-submission-message {
+    margin: -4px 0 0;
+    color: #176f38;
+    font-weight: 700;
+}
 .mystery-toolbar {
     display: flex;
     gap: 7px;
@@ -100,9 +162,63 @@
     height: 39px;
     padding: 0;
     font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.mystery-toolbar button:hover {
+    color: #e8ebef;
+}
+.mystery-toolbar button.selected {
+    outline: 4px solid #151719;
+    outline-offset: 2px;
 }
 .plain-clickable {
     width: fit-content;
+    transition: color 120ms ease;
+}
+.plain-clickable:hover,
+.plain-clickable.open {
+    color: #69717c;
+}
+.heatmap-pattern {
+    width: 100%;
+}
+.training-heatmap-frame {
+    width: 100%;
+    height: min(430px, 54vh);
+    border: 1px solid #d1d5da;
+}
+.training-heatmap {
+    height: 100%;
+    min-height: 280px;
+}
+.slice-control {
+    display: grid !important;
+    gap: 8px !important;
+    margin-top: 18px;
+    font-weight: 700;
+}
+.slice-control input {
+    width: 100%;
+    padding: 0;
+}
+.slice-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+    color: #626a74;
+    font-size: 12px;
+    font-weight: 400;
+}
+.slice-ticks span {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+}
+.slice-ticks span::before {
+    width: 1px;
+    height: 7px;
+    background: #626a74;
+    content: '';
 }
 .delete-list,
 .status-only-list {
@@ -115,11 +231,15 @@
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    cursor: pointer;
 }
 .delete-list button {
     padding: 2px 5px;
     border: 0;
     background: transparent;
+}
+.delete-list button:hover {
+    color: #d01818;
 }
 .bad-invalid {
     border: 2px solid #cf2020 !important;
