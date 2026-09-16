@@ -1,12 +1,17 @@
 import { useEffect, useState, type ComponentType, type DragEvent, type FormEvent } from 'react';
 
 import PlotlyHeatmap from '@/components/PlotlyHeatmap';
+import * as Solutions from './PatternSolutions';
+import { heatmapSlices } from './patternHeatmapData';
 
 import './PatternTrainingPage.css';
 
 type Pattern = {
     title: string;
     component: ComponentType;
+    solution: ComponentType;
+    improvement: string;
+    pureBlackBackground?: boolean;
 };
 
 function DemoFrame({ title, children }: { title: string; children: React.ReactNode }) {
@@ -227,23 +232,6 @@ function NoActionFeedback() {
         </DemoFrame>
     );
 }
-
-const heatmapSlices = Array.from({ length: 3 }, (_, slice) =>
-    Array.from({ length: 22 }, (_, row) =>
-        Array.from({ length: 30 }, (_, column) => {
-            const peakX = 7 + slice * 7;
-            const peakY = 7 + slice * 3;
-            const distance =
-                ((column - peakX) * (column - peakX)) / 38 + ((row - peakY) * (row - peakY)) / 24;
-            const secondaryDistance =
-                ((column - (24 - slice * 4)) * (column - (24 - slice * 4))) / 22 +
-                ((row - (16 - slice * 3)) * (row - (16 - slice * 3))) / 18;
-            return Math.round(
-                Math.min(255, 18 + 225 * Math.exp(-distance) + 105 * Math.exp(-secondaryDistance)),
-            );
-        }),
-    ),
-);
 
 function DelayedHeatmapFeedback() {
     const [selectedSlice, setSelectedSlice] = useState(0);
@@ -466,6 +454,66 @@ function DangerousActionNoRecovery() {
     );
 }
 
+function HardToReadTypeface() {
+    const [submitted, setSubmitted] = useState(false);
+
+    return (
+        <DemoFrame title="Hard-to-Read Typeface">
+            <form
+                className="bad-form illegible-typeface-demo"
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    setSubmitted(true);
+                }}
+            >
+                <h2>Scan Configuration</h2>
+                <p>
+                    Review the sample name and exposure time before adding this scan to the queue.
+                </p>
+                <label>
+                    Sample name
+                    <input defaultValue="Nickel reference foil" />
+                </label>
+                <label>
+                    Exposure time (seconds)
+                    <input type="number" min="0.1" step="0.1" defaultValue="1.5" />
+                </label>
+                <button className="generic-submit-button">Add to Queue</button>
+                {submitted && <p role="status">Scan added to the queue.</p>}
+            </form>
+        </DemoFrame>
+    );
+}
+
+function ExcessiveContrast() {
+    const [reviewed, setReviewed] = useState(false);
+
+    return (
+        <DemoFrame title="Excessive Contrast">
+            <div className="bad-form excessive-contrast-demo">
+                <h2>Scan Summary</h2>
+                <p>
+                    The nickel reference scan is complete. Review the acquisition details before
+                    continuing to the next sample.
+                </p>
+                <p>
+                    The detector collected 240 frames with an exposure time of 1.5 seconds per
+                    frame. The energy range was 8.0 to 12.0 keV, and the sample position remained
+                    fixed throughout the scan.
+                </p>
+                <p>
+                    Check the reference signal and confirm that the sample name matches your
+                    experiment notes. Once reviewed, the results are ready for analysis.
+                </p>
+                <button type="button" onClick={() => setReviewed(true)}>
+                    Mark as Reviewed
+                </button>
+                {reviewed && <p role="status">Scan marked as reviewed.</p>}
+            </div>
+        </DemoFrame>
+    );
+}
+
 function PlaceholderAsLabel() {
     const [name, setName] = useState('');
     return (
@@ -589,31 +637,43 @@ function InputDisappearsAfterError() {
     );
 }
 
-function RequirementsAfterFailure() {
-    const [step, setStep] = useState('5');
+function ImproperInputType() {
+    const [size, setSize] = useState('');
     const [error, setError] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     return (
-        <DemoFrame title="Requirements Revealed Only After Failure">
+        <DemoFrame title="Improper Input Type">
             <form
                 className="bad-form"
                 onSubmit={(event) => {
                     event.preventDefault();
-                    setError(true);
+                    const valid = ['small', 'medium', 'large'].includes(size.trim().toLowerCase());
+                    setError(!valid);
+                    setSubmitted(valid);
                 }}
             >
                 <h2>Line Scan</h2>
                 <label>
-                    Step size{' '}
+                    Step size
                     <input
-                        value={step}
+                        type="text"
+                        value={size}
+                        aria-invalid={error}
+                        aria-describedby={error ? 'step-size-error' : undefined}
                         onChange={(event) => {
-                            setStep(event.target.value);
+                            setSize(event.target.value);
                             setError(false);
+                            setSubmitted(false);
                         }}
                     />
                 </label>
                 <button>Start Scan</button>
-                {error && <p className="bad-error">Step must include units.</p>}
+                {error && (
+                    <p className="bad-error" id="step-size-error" role="alert">
+                        You must enter 'small', 'medium' or 'large'.
+                    </p>
+                )}
+                {submitted && <p role="status">Scan started.</p>}
             </form>
         </DemoFrame>
     );
@@ -732,53 +792,229 @@ function DragOnlyAction() {
 }
 
 const patterns: Pattern[] = [
-    { title: 'Weak Interaction Affordance', component: WeakInteractionAffordance },
-    { title: 'Ambiguous Confirmation Actions', component: AmbiguousConfirmationActions },
-    { title: 'Destructive Action Has Equal Emphasis', component: EqualDestructiveEmphasis },
-    { title: 'Inconsistent Button Labels', component: InconsistentButtonLabels },
-    { title: 'Bad Hover Interactions', component: BadHoverInteractions },
-    { title: "Clickable Thing Doesn't Look Clickable", component: HiddenClickableThing },
-    { title: 'No Feedback After an Action', component: NoActionFeedback },
-    { title: 'No Feedback During Loading', component: DelayedHeatmapFeedback },
-    { title: 'Bad Layout Shifts', component: BadHeatmapLayoutShift },
-    { title: 'Missing Disabled State', component: MissingDisabledState },
-    { title: 'Required Field Revealed After Submit', component: HiddenRequiredField },
-    { title: 'Unexpected Delete', component: DangerousActionNoRecovery },
-    { title: 'Placeholder Used as the Label', component: PlaceholderAsLabel },
-    { title: 'Vague Error Message', component: VagueErrorMessage },
-    { title: 'Error Is Far From the Problem', component: ErrorFarFromProblem },
-    { title: 'User Input Disappears After an Error', component: InputDisappearsAfterError },
-    { title: 'Requirements Revealed Only After Failure', component: RequirementsAfterFailure },
-    { title: 'Color Is the Only Status Indicator', component: ColorOnlyStatus },
-    { title: 'Low-Contrast Secondary Information', component: LowContrastInformation },
-    { title: 'Invisible Keyboard Focus', component: InvisibleKeyboardFocus },
-    { title: 'Tiny / Crowded Click Targets', component: TinyCrowdedTargets },
-    { title: 'Drag Is the Only Way to Perform an Action', component: DragOnlyAction },
+    {
+        title: 'Weak Interaction Affordance',
+        component: WeakInteractionAffordance,
+        solution: WeakInteractionAffordance,
+        improvement:
+            'A clear button shape, pointer cursor, and visible hover and focus states signal that this action is interactive.',
+    },
+    {
+        title: 'Ambiguous Confirmation Actions',
+        component: AmbiguousConfirmationActions,
+        solution: Solutions.ExplicitConfirmation,
+        improvement: 'Name the actions so users can predict exactly what each button will do.',
+    },
+    {
+        title: 'Destructive Action Has Equal Emphasis',
+        component: EqualDestructiveEmphasis,
+        solution: Solutions.DestructiveHierarchy,
+        improvement:
+            'Make Save the primary action. Give deletion a separate, less prominent treatment and confirm it before proceeding.',
+    },
+    {
+        title: 'Inconsistent Button Labels',
+        component: InconsistentButtonLabels,
+        solution: Solutions.ConsistentControls,
+        improvement:
+            'Use Move consistently for all three axes. Set Velocity describes the different action of changing a speed setting.',
+    },
+    {
+        title: 'Bad Hover Interactions',
+        component: BadHoverInteractions,
+        solution: Solutions.ReadableToolbar,
+        improvement: 'Keep controls readable on hover and give every icon a visible text label.',
+    },
+    {
+        title: "Clickable Thing Doesn't Look Clickable",
+        component: HiddenClickableThing,
+        solution: Solutions.VisibleDetectorActions,
+        improvement: 'Use recognizable, keyboard-accessible buttons for opening detector settings.',
+    },
+    {
+        title: 'No Feedback After an Action',
+        component: NoActionFeedback,
+        solution: Solutions.SaveFeedback,
+        improvement:
+            'Show progress immediately, prevent duplicate submissions, and confirm when settings have been saved.',
+    },
+    {
+        title: 'No Feedback During Loading',
+        component: DelayedHeatmapFeedback,
+        solution: Solutions.StableHeatmap,
+        improvement:
+            'Show a loading indicator as soon as the selected slice changes, then announce which slice is displayed.',
+    },
+    {
+        title: 'Bad Layout Shifts',
+        component: BadHeatmapLayoutShift,
+        solution: Solutions.StableHeatmap,
+        improvement:
+            'Reserve the preview space during loading so the slider and surrounding controls stay in place.',
+    },
+    {
+        title: 'Missing Disabled State',
+        component: MissingDisabledState,
+        solution: Solutions.DisabledScan,
+        improvement:
+            'Disable unavailable actions and explain why they are unavailable before users try them.',
+    },
+    {
+        title: 'Required Field Revealed After Submit',
+        component: HiddenRequiredField,
+        solution: Solutions.RequiredScan,
+        improvement:
+            'Identify required fields before submission and use built-in validation to guide users to them.',
+    },
+    {
+        title: 'Unexpected Delete',
+        component: DangerousActionNoRecovery,
+        solution: Solutions.RecoverableDelete,
+        improvement:
+            'Only the explicit Delete button removes an item. Undo lets users recover from an accidental deletion.',
+    },
+    {
+        title: 'Hard-to-Read Typeface',
+        component: HardToReadTypeface,
+        solution: HardToReadTypeface,
+        improvement: 'Use a familiar, readable typeface for body text, labels, and controls.',
+    },
+    {
+        title: 'Excessive Contrast',
+        component: ExcessiveContrast,
+        solution: ExcessiveContrast,
+        improvement:
+            'Use a charcoal surface and off-white text to soften the dark theme while keeping text clearly readable.',
+        pureBlackBackground: true,
+    },
+    {
+        title: 'Placeholder Used as the Label',
+        component: PlaceholderAsLabel,
+        solution: Solutions.LabeledMotor,
+        improvement:
+            'Keep a visible label above the field so its meaning remains clear after typing.',
+    },
+    {
+        title: 'Vague Error Message',
+        component: VagueErrorMessage,
+        solution: Solutions.ActionableError,
+        improvement:
+            'Explain what is wrong and how to fix it, including the units and an example of a valid value.',
+    },
+    {
+        title: 'Error Is Far From the Problem',
+        component: ErrorFarFromProblem,
+        solution: Solutions.InlineError,
+        improvement:
+            'Place the error beside its field, associate it with the input, and focus the field that needs attention.',
+    },
+    {
+        title: 'User Input Disappears After an Error',
+        component: InputDisappearsAfterError,
+        solution: Solutions.PreservedInput,
+        improvement:
+            'Keep all entries when saving fails and let the user retry without re-entering their work.',
+    },
+    {
+        title: 'Improper Input Type',
+        component: ImproperInputType,
+        solution: Solutions.SizeSelect,
+        improvement:
+            'Use a dropdown for a fixed set of choices so users can see and select a valid value.',
+    },
+    {
+        title: 'Color Is the Only Status Indicator',
+        component: ColorOnlyStatus,
+        solution: Solutions.TextStatus,
+        improvement:
+            'Pair color with a text status and an icon so the meaning does not depend on color perception.',
+    },
+    {
+        title: 'Low-Contrast Secondary Information',
+        component: LowContrastInformation,
+        solution: LowContrastInformation,
+        improvement: 'Give supporting text and controls sufficient contrast to remain readable.',
+    },
+    {
+        title: 'Invisible Keyboard Focus',
+        component: InvisibleKeyboardFocus,
+        solution: InvisibleKeyboardFocus,
+        improvement:
+            'Show a clear focus outline so keyboard users can see which control will respond. Try the Tab key.',
+    },
+    {
+        title: 'Tiny / Crowded Click Targets',
+        component: TinyCrowdedTargets,
+        solution: Solutions.ComfortableTargets,
+        improvement:
+            'Use comfortably sized, spaced buttons with meaningful labels to reduce accidental clicks.',
+    },
+    {
+        title: 'Drag Is the Only Way to Perform an Action',
+        component: DragOnlyAction,
+        solution: Solutions.KeyboardReordering,
+        improvement:
+            'Provide Up and Down buttons that work with a keyboard, mouse, or touch, and announce the new order.',
+    },
 ];
 
 export default function PatternTrainingPage() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [patternInstance, setPatternInstance] = useState(0);
-    const CurrentPattern = patterns[currentIndex].component;
+    const [showSolution, setShowSolution] = useState(false);
+    const pattern = patterns[currentIndex];
+    const CurrentPattern = pattern.component;
+    const CurrentSolution = pattern.solution;
 
     function move(direction: -1 | 1) {
+        setShowSolution(false);
         setCurrentIndex((index) => Math.min(patterns.length - 1, Math.max(0, index + direction)));
     }
 
     return (
-        <main className="pattern-training-page">
+        <main
+            className={`pattern-training-page${patterns[currentIndex].pureBlackBackground ? ' pure-black-pattern' : ''}`}
+        >
             <header className="pattern-training-header">
                 <h1>Pattern Training</h1>
             </header>
-            <div className="pattern-training-body">
-                <CurrentPattern key={`${currentIndex}-${patternInstance}`} />
+            <div className={`pattern-training-body${showSolution ? ' showing-solution' : ''}`}>
+                <div className="pattern-original-pane">
+                    <div className="pattern-example-content">
+                        {showSolution && <p className="comparison-label">Original</p>}
+                        <CurrentPattern key={`${currentIndex}-${patternInstance}`} />
+                    </div>
+                </div>
+                {showSolution && (
+                    <section
+                        id="pattern-solution"
+                        className={`pattern-solution${pattern.pureBlackBackground ? ' softened-dark-solution' : ''}`}
+                        aria-label={`Solution: ${pattern.title}`}
+                    >
+                        <div className="pattern-example-content">
+                            <p className="comparison-label">Solution</p>
+                            <p className="solution-explanation">{pattern.improvement}</p>
+                            <div className="pattern-demo">
+                                <CurrentSolution key={`${currentIndex}-${patternInstance}`} />
+                            </div>
+                        </div>
+                    </section>
+                )}
             </div>
             <footer className="pattern-training-footer">
                 <div>
                     <strong>
                         Pattern {currentIndex + 1} of {patterns.length}
                     </strong>
-                    <span>{patterns[currentIndex].title}</span>
+                    <button
+                        className="solution-toggle"
+                        type="button"
+                        aria-expanded={showSolution}
+                        aria-controls="pattern-solution"
+                        onClick={() => setShowSolution((visible) => !visible)}
+                    >
+                        {showSolution ? 'Hide solution' : 'Show solution'}
+                    </button>
                 </div>
                 <button
                     className="refresh-pattern-button"

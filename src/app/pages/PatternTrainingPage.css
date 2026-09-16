@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'Ewert';
+    src: url('../assets/fonts/Ewert-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
 .pattern-training-page {
     display: grid;
     grid-template-rows: auto 1fr auto;
@@ -100,6 +108,22 @@
 .bad-form label {
     display: grid;
     gap: 5px;
+}
+/* An ornate display serif deliberately misused for everyday interface text. */
+.illegible-typeface-demo {
+    font-family: 'Ewert', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.5;
+}
+.illegible-typeface-demo h2 {
+    font-weight: 400;
+}
+.illegible-typeface-demo p {
+    margin: 0;
+}
+.illegible-typeface-demo input {
+    min-width: 0;
+    width: 100%;
 }
 .input-with-unit {
     display: flex;
@@ -378,6 +402,33 @@
     font-weight: 700;
 }
 
+/* Intentionally extreme contrast, scoped to this exercise and its entire page. */
+.pattern-training-page.pure-black-pattern,
+.pure-black-pattern .pattern-training-header,
+.pure-black-pattern .pattern-training-body,
+.pure-black-pattern .pattern-training-footer,
+.pure-black-pattern .pattern-training-footer span,
+.pure-black-pattern button {
+    color: #fff;
+    background: #000;
+}
+.pure-black-pattern .pattern-training-header,
+.pure-black-pattern .pattern-training-footer,
+.pure-black-pattern button {
+    border-color: #fff;
+}
+.excessive-contrast-demo {
+    max-width: 600px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+.excessive-contrast-demo p {
+    margin: 0;
+}
+.excessive-contrast-demo button {
+    width: fit-content;
+}
+
 @media (max-width: 600px) {
     .pattern-training-header {
         padding: 14px 18px;
@@ -399,5 +450,317 @@
     .compact-form button,
     .compact-form p {
         grid-column: auto;
+    }
+}
+
+/* Equal-width comparison panes; the original stays mounted when toggled. */
+.pattern-training-body {
+    padding: 0;
+    align-items: stretch;
+    justify-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+}
+.pattern-training-body.showing-solution {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.pattern-original-pane,
+.pattern-solution {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    padding: 32px;
+    box-sizing: border-box;
+}
+.pattern-example-content {
+    width: min(680px, 100%);
+    min-width: 0;
+}
+.pattern-solution {
+    color: #20242a;
+    background: #f5f8fa;
+    border-left: 1px solid #cbd5df;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.comparison-label {
+    margin: 0 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.solution-explanation {
+    margin: 0 0 24px;
+    padding: 12px 16px;
+    border-left: 3px solid #1976c8;
+    background: #e7f0f8;
+    line-height: 1.5;
+    font-size: 14px;
+}
+.pattern-training-footer .solution-toggle {
+    display: block;
+    width: fit-content;
+    height: auto;
+    margin: 0;
+    padding: 2px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+.solution-toggle:hover {
+    text-decoration: underline;
+}
+.solution-toggle:focus-visible,
+.pattern-solution :is(button, input, select):focus-visible {
+    outline: 3px solid #1260a5;
+    outline-offset: 3px;
+}
+.pattern-solution .pattern-demo {
+    width: 100%;
+}
+.pattern-solution .bad-form {
+    width: 100%;
+    max-width: 600px;
+}
+.pattern-solution .bad-dialog {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+.pattern-solution :is(input, select),
+.showing-solution .pattern-original-pane :is(input, select) {
+    min-width: 0;
+    max-width: 100%;
+}
+.pattern-solution button {
+    min-height: 44px;
+    padding: 9px 16px;
+    color: #20242a;
+    border: 1px solid #667787;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+.pattern-solution button:hover:not(:disabled) {
+    color: #172a3e;
+    border-color: #1260a5;
+    background: #dceaf7;
+}
+.pattern-solution button:disabled {
+    color: #5d6874;
+    border-color: #aeb7c0;
+    background: #e0e4e8;
+    cursor: not-allowed;
+}
+.pattern-solution .solution-primary,
+.pattern-solution .generic-submit-button {
+    color: #fff;
+    background: #1764a1;
+    border-color: #1764a1;
+}
+.pattern-solution .solution-primary:hover:not(:disabled),
+.pattern-solution .generic-submit-button:hover:not(:disabled) {
+    color: #fff;
+    background: #104d7e;
+}
+.pattern-solution .solution-primary:disabled {
+    color: #5d6874;
+    border-color: #aeb7c0;
+    background: #e0e4e8;
+}
+.pattern-solution .solution-danger {
+    color: #a52222;
+    border-color: #b77878;
+    background: #fff;
+}
+.pattern-solution .solution-danger:hover:not(:disabled) {
+    color: #861b1b;
+    border-color: #a52222;
+    background: #fff0f0;
+}
+.solution-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+.solution-toolbar-icon {
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 28px;
+    line-height: 1;
+    vertical-align: middle;
+}
+.solution-confirmation {
+    border-top: 1px solid #cbd5df;
+    padding-top: 12px;
+}
+.solution-tooltip-action {
+    position: relative;
+    display: inline-flex;
+}
+.solution-tooltip-action .solution-toolbar-icon {
+    margin-right: 0;
+}
+.solution-tooltip {
+    position: absolute;
+    z-index: 2;
+    bottom: 100%;
+    left: 0;
+    width: max-content;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: #20242a;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.solution-option-title,
+.solution-confirmation h3,
+.pattern-solution .bad-dialog h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 700;
+}
+.pattern-solution .bad-text-button {
+    color: #fff;
+    cursor: pointer;
+}
+.pattern-solution .bad-text-button:hover {
+    color: #fff;
+    background: #104d7e !important;
+    border-color: #104d7e !important;
+}
+.pattern-solution .illegible-typeface-demo {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+}
+.pattern-solution .illegible-typeface-demo h2 {
+    font-weight: 700;
+}
+.pattern-solution .low-contrast-demo :is(span, p, small) {
+    color: #475569;
+}
+.pattern-solution .low-contrast-demo button {
+    color: #20242a;
+    border-color: #667787;
+}
+.pattern-solution .invisible-focus button:focus {
+    outline: 3px solid #1260a5;
+    outline-offset: 3px;
+}
+.solution-status {
+    min-height: 1.5em;
+    margin: 0;
+}
+.solution-status-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    flex: 0 0 24px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+}
+.solution-status-icon.green {
+    color: #16803c;
+}
+.solution-status-icon.red {
+    color: #c62828;
+}
+.solution-status-icon.yellow {
+    color: #947000;
+}
+.solution-device-status {
+    color: #626a74;
+    font-weight: 400;
+}
+.solution-heatmap-frame {
+    position: relative;
+}
+.solution-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #ffffffdf;
+    color: #20242a;
+    font-weight: 700;
+}
+.solution-queue {
+    padding: 0;
+    list-style: none;
+}
+.solution-queue li,
+.solution-queue-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #cbd5df;
+}
+.pattern-solution.softened-dark-solution {
+    background: #22262c;
+    color: #e4e7eb;
+    border-color: #535d69;
+}
+.softened-dark-solution .solution-explanation {
+    color: #e4e7eb;
+    background: #303740;
+    border-color: #8bbce5;
+}
+.softened-dark-solution button {
+    color: #e4e7eb;
+    background: #303740;
+    border-color: #8d99a6;
+}
+.softened-dark-solution button:hover:not(:disabled) {
+    color: #e4e7eb;
+    background: #414c59;
+    border-color: #afc7dc;
+}
+.softened-dark-solution button:focus-visible {
+    outline-color: #8bbce5;
+}
+@media (max-width: 900px) {
+    .pattern-original-pane,
+    .pattern-solution {
+        padding: 20px;
+    }
+    .showing-solution .motor-control-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .showing-solution .bad-row {
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 600px) {
+    /* Keep the requested side-by-side comparison even on narrow screens. */
+    .showing-solution .pattern-original-pane,
+    .showing-solution .pattern-solution {
+        padding: 12px;
+    }
+    .showing-solution .pattern-demo h2 {
+        font-size: 21px;
+        overflow-wrap: anywhere;
+    }
+    .showing-solution .bad-panel,
+    .showing-solution .bad-dialog {
+        padding: 10px;
+    }
+    .showing-solution .tiny-queue-row {
+        flex-wrap: wrap;
+    }
+    .pattern-training-footer {
+        flex-wrap: wrap;
     }
 }
