@@ -23,10 +23,10 @@ function openPattern(number: number) {
 }
 
 describe('pattern solutions', () => {
-    it('reveals and hides a solution for all 24 patterns, resetting on navigation', () => {
+    it('reveals and hides a solution for all 30 patterns, resetting on navigation', () => {
         render(<PatternTrainingPage />);
-        for (let number = 1; number <= 24; number++) {
-            expect(screen.getByText(`Pattern ${number} of 24`)).toBeInTheDocument();
+        for (let number = 1; number <= 30; number++) {
+            expect(screen.getByText(`Pattern ${number} of 30`)).toBeInTheDocument();
             expect(screen.queryByRole('region', { name: /^Solution:/ })).not.toBeInTheDocument();
             const toggle = screen.getByRole('button', { name: 'Show solution' });
             expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -36,7 +36,7 @@ describe('pattern solutions', () => {
             fireEvent.click(screen.getByRole('button', { name: 'Hide solution' }));
             expect(screen.queryByRole('region', { name: /^Solution:/ })).not.toBeInTheDocument();
             fireEvent.click(toggle);
-            if (number < 24) next();
+            if (number < 30) next();
         }
         expect(screen.getByRole('button', { name: 'Next pattern' })).toBeDisabled();
         fireEvent.click(screen.getByRole('button', { name: 'Previous pattern' }));
@@ -143,6 +143,26 @@ describe('pattern solutions', () => {
         await user.click(solution.getByRole('button', { name: 'Start Scan' }));
         expect(select).toHaveValue('large');
         expect(solution.getByRole('status')).toHaveTextContent('Scan started.');
+    });
+
+    it('groups the same analysis controls into named sections and keeps them interactive', () => {
+        const solution = openPattern(25);
+        const original = within(
+            screen.getByRole('region', { name: 'Ungrouped analysis controls' }),
+        );
+        expect(original.getAllByRole('combobox')).toHaveLength(8);
+        expect(solution.getAllByRole('combobox')).toHaveLength(8);
+        expect(original.queryByRole('heading', { name: 'Preprocessing' })).not.toBeInTheDocument();
+        const fitting = within(solution.getByRole('region', { name: 'Peak Fitting' }));
+        expect(fitting.getByLabelText('Peak model')).toBeInTheDocument();
+        expect(fitting.getByLabelText('Number of peaks')).toBeInTheDocument();
+        for (const name of ['Data', 'Preprocessing', 'Peak Fitting', 'Results']) {
+            expect(solution.getByRole('heading', { name })).toBeInTheDocument();
+        }
+        fireEvent.change(fitting.getByLabelText('Peak model'), { target: { value: 'Voigt' } });
+        fireEvent.click(fitting.getByRole('button', { name: 'Run Peak Fit' }));
+        expect(solution.getByRole('status')).toHaveTextContent('using the Voigt model');
+        expect(original.getByLabelText('Peak model')).toHaveValue('Gaussian');
     });
 
     it('reorders using keyboard-activated controls and announces the result', async () => {
