@@ -2,7 +2,9 @@ import { useEffect, useState, type ComponentType, type DragEvent, type FormEvent
 
 import PlotlyHeatmap from '@/components/PlotlyHeatmap';
 import * as Solutions from './PatternSolutions';
+import * as ScientificPatterns from './ScientificDashboardPatterns';
 import { heatmapSlices } from './patternHeatmapData';
+import { GroupedAnalysisSidebar, UngroupedAnalysisSidebar } from './SidebarGroupingPattern';
 
 import './PatternTrainingPage.css';
 
@@ -955,6 +957,48 @@ const patterns: Pattern[] = [
         solution: Solutions.KeyboardReordering,
         improvement:
             'Provide Up and Down buttons that work with a keyboard, mouse, or touch, and announce the new order.',
+    },
+    {
+        title: 'Ungrouped Sidebar Controls',
+        component: UngroupedAnalysisSidebar,
+        solution: GroupedAnalysisSidebar,
+        improvement:
+            'Group related settings and actions under simple headings. Add a relevant icon to each section and leave space between groups so users can quickly find what they need.',
+    },
+    {
+        title: 'Unclear Sample Identity',
+        component: ScientificPatterns.UnclearSampleIdentity,
+        solution: ScientificPatterns.ClearSampleIdentity,
+        improvement:
+            'Keep sample name, run ID, acquisition time, and experiment context visible so users can confidently identify the selected result.',
+    },
+    {
+        title: 'Analysis Context Resets Between Views',
+        component: ScientificPatterns.LostAnalysisContext,
+        solution: ScientificPatterns.PreservedAnalysisContext,
+        improvement:
+            'Preserve zoom and the selected channel when switching between chart and table. Reset the view only when the user requests it.',
+    },
+    {
+        title: 'Hidden Acquisition Cost',
+        component: ScientificPatterns.HiddenAcquisitionCost,
+        solution: ScientificPatterns.VisibleAcquisitionCost,
+        improvement:
+            'Preview the estimated runtime, data volume, and number of measurements before starting. Update estimates as settings change and show the assumptions.',
+    },
+    {
+        title: 'Stale Data Looks Live',
+        component: ScientificPatterns.StaleDataLooksLive,
+        solution: ScientificPatterns.ClearlyStaleData,
+        improvement:
+            'Mark disconnected readings as stale, show their age, and distinguish the last known value from a live measurement.',
+    },
+    {
+        title: 'False Precision',
+        component: ScientificPatterns.FalsePrecision,
+        solution: ScientificPatterns.MeaningfulPrecision,
+        improvement:
+            'Show meaningful decimal places and measurement uncertainty instead of implying accuracy with excessive digits.',
     },
 ];
 

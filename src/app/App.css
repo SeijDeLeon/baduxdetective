@@ -20,84 +20,94 @@ body,
 .home-page {
     box-sizing: border-box;
     min-height: 100vh;
+    min-height: 100svh;
     width: 100%;
-    padding: clamp(2rem, 6vw, 5rem);
-    color: #172033;
-    background: #eef2f6;
-    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-}
-
-.home-page__eyebrow {
-    margin: 0 0 0.5rem;
-    color: #52657d;
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    padding: clamp(64px, 9vh, 112px) 24px 48px;
+    color: #203d3d;
+    background: #eae5d2 url('./assets/images/lab-crime-scene.png') center / cover no-repeat;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
 }
 
 .home-page h1 {
-    max-width: 52rem;
-    margin: 0;
-    font-size: clamp(2rem, 5vw, 4.25rem);
-    line-height: 1;
+    margin: 0 0 28px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(56px, 7.5vw, 112px);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 1.05;
+    text-shadow: 0 2px 0 #f3eedc;
 }
 
-.home-page__intro {
-    margin: 1rem 0 2.5rem;
-    color: #52657d;
-    font-size: 1.05rem;
-}
-
-.page-directory {
+.home-page__choices {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: 0.8rem;
-    max-width: 70rem;
-    padding: 0;
-    list-style: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    width: min(580px, 100%);
+    margin: 0 auto;
 }
 
-.page-directory a {
-    min-height: 8.5rem;
-    display: block;
-    padding: 1.25rem;
-    border: 1px solid #cfd7e2;
-    border-radius: 0.75rem;
-    color: inherit;
-    background: white;
+.home-page__choice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 80px;
+    box-sizing: border-box;
+    padding: 20px 24px;
+    border: 2px solid #263c3b;
+    border-radius: 3px;
+    color: #243b3b;
+    background: #edb6a9;
+    box-shadow: 4px 4px 0 #263c3b;
+    font-size: clamp(18px, 1.7vw, 22px);
+    font-weight: 700;
+    text-align: left;
     text-decoration: none;
-    box-shadow: 0 1px 3px rgba(28, 39, 54, 0.06);
+    transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        background-color 140ms ease;
 }
 
-.page-directory a:hover,
-.page-directory a:focus-visible {
-    background: #f8fafc;
-    border-color: #8796aa;
+.home-page__choice--case {
+    color: #f7f1df;
+    background: #365f60;
 }
 
-.page-directory a span,
-.page-directory a strong,
-.page-directory a small {
-    display: block;
+.home-page__choice:hover {
+    transform: translateY(-3px);
+    box-shadow: 4px 7px 0 #263c3b;
+    background: #f4c8bc;
 }
 
-.page-directory a span {
-    margin-bottom: 0.7rem;
-    color: #68798e;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+.home-page__choice--case:hover {
+    background: #274c4d;
 }
 
-.page-directory a strong {
-    margin-bottom: 0.55rem;
+.home-page__choice:focus-visible {
+    outline: 3px solid #203d3d;
+    outline-offset: 7px;
 }
 
-.page-directory a small {
-    color: #657387;
-    line-height: 1.4;
+@media (max-width: 520px) {
+    .home-page {
+        padding-top: 72px;
+    }
+    .home-page__choices {
+        grid-template-columns: 1fr;
+        width: min(300px, 100%);
+        gap: 16px;
+    }
+    .home-page__choice {
+        min-height: 66px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-page__choice {
+        transition: none;
+    }
 }
 
 .exercise-page {
