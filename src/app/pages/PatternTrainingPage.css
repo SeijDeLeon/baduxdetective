@@ -8,23 +8,154 @@
 
 .pattern-training-page {
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
     min-height: 100vh;
-    color: #20242a;
-    background: #fff;
+    color: #203d3d;
+    background: #f3eedc;
     font-family: Arial, Helvetica, sans-serif;
 }
 
 .pattern-training-header {
-    padding: 18px 28px;
-    border-bottom: 1px solid #d7dbe0;
-    background: #f4f5f7;
+    border-bottom: 2px solid #263c3b;
+    background: #eae5d2;
+}
+
+.pattern-training-header-inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    width: min(1200px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 22px;
+}
+
+.pattern-training-header-title {
+    min-width: 0;
+}
+
+.pattern-training-header-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pattern-training-home-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 27px;
+    height: 27px;
+    border: 1px solid #263c3b;
+    border-radius: 4px;
+    color: #203d3d;
+    background: #f3eedc;
+    box-shadow: 1px 1px 0 #263c3b;
+    text-decoration: none;
+}
+
+.pattern-training-home-link:hover {
+    background: #fffaf0;
+    transform: translateY(-1px);
+}
+
+.pattern-training-home-link:focus-visible {
+    outline: 3px solid #1260a5;
+    outline-offset: 3px;
+}
+
+.eyebrow {
+    margin: 0;
+    color: #4a6d6d;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .pattern-training-header h1 {
     margin: 0;
-    font-size: 24px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(36px, 4vw, 54px);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+    text-shadow: 0 2px 0 #f3eedc;
 }
+
+.pattern-training-header-copy {
+    max-width: 360px;
+    color: #263c3b;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: right;
+}
+
+.pattern-training-header-copy p {
+    margin: 0;
+}
+
+.pattern-training-intro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
+    margin: 0 0 28px;
+}
+
+.pattern-training-intro-card,
+.pattern-training-first-pattern-hint {
+    box-sizing: border-box;
+    flex: 1 1 260px;
+    min-width: 0;
+    border: 2px solid #263c3b;
+    border-radius: 12px;
+    background: #f5efdf;
+    box-shadow: 4px 4px 0 #263c3b;
+}
+
+.pattern-training-intro-card {
+    padding: 18px 20px;
+}
+
+.pattern-training-intro-label {
+    margin: 0 0 8px;
+    color: #4a6d6d;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pattern-training-intro-card p:last-child,
+.pattern-training-first-pattern-hint p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.pattern-training-first-pattern-hint {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 16px 18px;
+    background: #edb6a9;
+}
+
+.pattern-training-first-pattern-hint-badge {
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #263c3b;
+    color: #f3eedc;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
 .pattern-training-body {
     display: grid;
     min-height: 0;
@@ -363,14 +494,42 @@
     color: #666;
 }
 
+.overflowing-text-card {
+    display: grid;
+    gap: 7px;
+    box-sizing: border-box;
+    width: min(360px, 100%);
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #aeb5be;
+    border-radius: 4px;
+    background: #f4f6f8;
+}
+.overflowing-text-label {
+    color: #626a74;
+    font-size: 13px;
+    font-weight: 700;
+}
+.overflowing-text-value {
+    white-space: nowrap;
+}
+.overflowing-text-value.truncated-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .pattern-training-footer {
     display: flex;
-    min-height: 56px;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    min-height: 74px;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 22px;
-    border-top: 1px solid #d7dbe0;
-    background: #f4f5f7;
+    gap: 12px;
+    padding: 12px 22px;
+    border-top: 2px solid #263c3b;
+    background: #eae5d2;
 }
 .pattern-training-footer div {
     display: grid;
@@ -392,6 +551,18 @@
     background: #fff;
     font-size: 22px;
 }
+.pattern-training-footer .refresh-pattern-button,
+.pattern-training-footer nav button {
+    cursor: pointer;
+    transition:
+        box-shadow 120ms ease,
+        transform 120ms ease;
+}
+.pattern-training-footer .refresh-pattern-button:hover:not(:disabled),
+.pattern-training-footer nav button:hover:not(:disabled) {
+    box-shadow: 0 4px 0 #263c3b;
+    transform: translateY(-1px);
+}
 .pattern-training-footer button:disabled {
     opacity: 0.35;
 }
@@ -412,10 +583,27 @@
     color: #fff;
     background: #000;
 }
+.pure-black-pattern .eyebrow,
+.pure-black-pattern .pattern-training-header-copy {
+    color: #fff;
+}
+.pure-black-pattern .pattern-training-home-link {
+    color: #fff;
+    border-color: #fff;
+    background: #000;
+    box-shadow: 2px 2px 0 #fff;
+}
+.pure-black-pattern .pattern-training-header h1 {
+    text-shadow: none;
+}
 .pure-black-pattern .pattern-training-header,
 .pure-black-pattern .pattern-training-footer,
 .pure-black-pattern button {
     border-color: #fff;
+}
+.pure-black-pattern .pattern-training-footer .refresh-pattern-button:hover:not(:disabled),
+.pure-black-pattern .pattern-training-footer nav button:hover:not(:disabled) {
+    box-shadow: 0 4px 0 #fff;
 }
 .excessive-contrast-demo {
     max-width: 600px;
@@ -467,7 +655,12 @@
 .pattern-solution {
     display: grid;
     place-items: center;
+    /* `safe` falls back to start-alignment when the demo is taller than the
+       pane, so its top stays reachable instead of clipping under the header. */
+    align-content: safe center;
     min-width: 0;
+    min-height: 0;
+    overflow: auto;
     padding: 32px;
     box-sizing: border-box;
 }

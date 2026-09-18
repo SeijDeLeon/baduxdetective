@@ -1,4 +1,5 @@
 import { useEffect, useState, type ComponentType, type DragEvent, type FormEvent } from 'react';
+import { Home } from 'lucide-react';
 
 import PlotlyHeatmap from '@/components/PlotlyHeatmap';
 import * as Solutions from './PatternSolutions';
@@ -793,6 +794,20 @@ function DragOnlyAction() {
     );
 }
 
+function TextExtendsBeyondContainer() {
+    return (
+        <DemoFrame title="Text Extends Beyond Its Container">
+            <h2>Recent Scan</h2>
+            <div className="overflowing-text-card">
+                <span className="overflowing-text-label">Data file</span>
+                <span className="overflowing-text-value">
+                    2026-09-18_beamline-8.3.2_high-resolution-nickel-calibration_run-004281.h5
+                </span>
+            </div>
+        </DemoFrame>
+    );
+}
+
 const patterns: Pattern[] = [
     {
         title: 'Weak Interaction Affordance',
@@ -1000,6 +1015,13 @@ const patterns: Pattern[] = [
         improvement:
             'Show meaningful decimal places and measurement uncertainty instead of implying accuracy with excessive digits.',
     },
+    {
+        title: 'Text Extends Beyond Its Container',
+        component: TextExtendsBeyondContainer,
+        solution: Solutions.TruncatedText,
+        improvement:
+            'Keep long text inside its container and show an ellipsis when space runs out. Preserve access to the full value on hover.',
+    },
 ];
 
 export default function PatternTrainingPage() {
@@ -1009,6 +1031,7 @@ export default function PatternTrainingPage() {
     const pattern = patterns[currentIndex];
     const CurrentPattern = pattern.component;
     const CurrentSolution = pattern.solution;
+    const isFirstPattern = currentIndex === 0;
 
     function move(direction: -1 | 1) {
         setShowSolution(false);
@@ -1020,11 +1043,51 @@ export default function PatternTrainingPage() {
             className={`pattern-training-page${patterns[currentIndex].pureBlackBackground ? ' pure-black-pattern' : ''}`}
         >
             <header className="pattern-training-header">
-                <h1>Pattern Training</h1>
+                <div className="pattern-training-header-inner">
+                    <div className="pattern-training-header-title">
+                        <div className="pattern-training-header-meta">
+                            <p className="eyebrow">UX Detective</p>
+                            <a
+                                className="pattern-training-home-link"
+                                href="/"
+                                aria-label="Back to home"
+                                title="Back to home"
+                            >
+                                <Home size={15} strokeWidth={2.5} aria-hidden="true" />
+                            </a>
+                        </div>
+                        <h1>Pattern Training</h1>
+                    </div>
+                    <div className="pattern-training-header-copy">
+                        <p>
+                            Spot the weak interaction and compare it to a stronger alternative.
+                        </p>
+                    </div>
+                </div>
             </header>
             <div className={`pattern-training-body${showSolution ? ' showing-solution' : ''}`}>
                 <div className="pattern-original-pane">
                     <div className="pattern-example-content">
+                        {isFirstPattern && (
+                            <div className="pattern-training-intro" aria-live="polite">
+                                <div className="pattern-training-intro-card">
+                                    <p className="pattern-training-intro-label">What to look for</p>
+                                    <p>
+                                        Focus on whether the action looks clickable, what it conveys,
+                                        and how the interface guides your next move.
+                                    </p>
+                                </div>
+                                <div className="pattern-training-first-pattern-hint" aria-label="First example guide">
+                                    <span className="pattern-training-first-pattern-hint-badge">
+                                        Try this first
+                                    </span>
+                                    <p>
+                                        Start by asking: does this button clearly signal it is
+                                        interactive, or does it look like plain text?
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                         {showSolution && <p className="comparison-label">Original</p>}
                         <CurrentPattern key={`${currentIndex}-${patternInstance}`} />
                     </div>

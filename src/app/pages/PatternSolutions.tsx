@@ -805,3 +805,20 @@ export function KeyboardReordering() {
         </>
     );
 }
+
+export function TruncatedText() {
+    const filename =
+        '2026-09-18_beamline-8.3.2_high-resolution-nickel-calibration_run-004281.h5';
+
+    return (
+        <>
+            <h2>Recent Scan</h2>
+            <div className="overflowing-text-card">
+                <span className="overflowing-text-label">Data file</span>
+                <span className="overflowing-text-value truncated-text" title={filename}>
+                    {filename}
+                </span>
+            </div>
+        </>
+    );
+}

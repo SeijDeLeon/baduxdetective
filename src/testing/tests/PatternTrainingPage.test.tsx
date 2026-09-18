@@ -23,10 +23,26 @@ function openPattern(number: number) {
 }
 
 describe('pattern solutions', () => {
-    it('reveals and hides a solution for all 30 patterns, resetting on navigation', () => {
+    it('shows a short intro and first-pattern guidance before the exercises begin', () => {
         render(<PatternTrainingPage />);
-        for (let number = 1; number <= 30; number++) {
-            expect(screen.getByText(`Pattern ${number} of 30`)).toBeInTheDocument();
+
+        expect(screen.getByRole('heading', { name: 'Pattern Training' })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/');
+        expect(
+            screen.getByText(/spot the weak interaction and compare it to a stronger alternative/i),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText((content) =>
+                content.includes('Focus on whether the action looks clickable') &&
+                content.includes('how the interface guides your next move'),
+            ),
+        ).toBeInTheDocument();
+    });
+
+    it('reveals and hides a solution for all 31 patterns, resetting on navigation', () => {
+        render(<PatternTrainingPage />);
+        for (let number = 1; number <= 31; number++) {
+            expect(screen.getByText(`Pattern ${number} of 31`)).toBeInTheDocument();
             expect(screen.queryByRole('region', { name: /^Solution:/ })).not.toBeInTheDocument();
             const toggle = screen.getByRole('button', { name: 'Show solution' });
             expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -36,7 +52,7 @@ describe('pattern solutions', () => {
             fireEvent.click(screen.getByRole('button', { name: 'Hide solution' }));
             expect(screen.queryByRole('region', { name: /^Solution:/ })).not.toBeInTheDocument();
             fireEvent.click(toggle);
-            if (number < 30) next();
+            if (number < 31) next();
         }
         expect(screen.getByRole('button', { name: 'Next pattern' })).toBeDisabled();
         fireEvent.click(screen.getByRole('button', { name: 'Previous pattern' }));
@@ -176,5 +192,15 @@ describe('pattern solutions', () => {
             'Dark frame moved to position 2 of 3',
         );
         expect(solution.getByRole('button', { name: 'Move Sample alignment up' })).toBeDisabled();
+    });
+
+    it('truncates overflowing text in pattern 31 while retaining the full value', () => {
+        const solution = openPattern(31);
+        const filename =
+            '2026-09-18_beamline-8.3.2_high-resolution-nickel-calibration_run-004281.h5';
+        const value = solution.getByTitle(filename);
+
+        expect(value).toHaveTextContent(filename);
+        expect(value).toHaveClass('truncated-text');
     });
 });
