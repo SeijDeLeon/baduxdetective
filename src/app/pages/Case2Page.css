@@ -1,0 +1,468 @@
+.case-two-page {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
+    min-height: 100vh;
+    color: #1b2430;
+    background: #eef1f5;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.case-two-page * {
+    box-sizing: border-box;
+}
+
+.case-two-page button,
+.case-two-page input,
+.case-two-page select {
+    font: inherit;
+}
+
+/* Header ------------------------------------------------------------------ */
+
+.case-two-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    padding: 14px 22px;
+    border-bottom: 1px solid #c8d1dc;
+    background: #ffffff;
+}
+
+.case-two-header-title {
+    display: grid;
+    gap: 4px;
+}
+
+.case-two-home-link {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 6px;
+    color: #4a6d6d;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.case-two-home-link:hover {
+    color: #1b2430;
+    text-decoration: underline;
+}
+
+.case-two-header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.case-two-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: #4d5a6a;
+    font-size: 13px;
+}
+
+.case-two-status code {
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #eef1f5;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+
+.case-two-status-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #8b97a6;
+}
+
+.case-two-status-dot--running {
+    background: #1f9d55;
+}
+
+.case-two-status-dot--complete {
+    background: #1f6feb;
+}
+
+.case-two-status-dot--aborted {
+    background: #d13438;
+}
+
+/* Body -------------------------------------------------------------------- */
+
+.case-two-body {
+    display: grid;
+    grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+    min-height: 0;
+    gap: 16px;
+    padding: 16px;
+}
+
+.case-two-left {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    border: 1px solid #c8d1dc;
+    border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.case-two-tabs {
+    display: flex;
+    border-bottom: 1px solid #c8d1dc;
+    background: #f5f7fa;
+}
+
+.case-two-tabs button {
+    flex: 1 1 0;
+    padding: 12px 8px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: #4d5a6a;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.case-two-tabs button:hover {
+    color: #1b2430;
+    background: #eaeef4;
+}
+
+.case-two-tabs button.is-active {
+    color: #1f6feb;
+    border-bottom-color: #1f6feb;
+    background: #ffffff;
+}
+
+.case-two-tabs button:focus-visible {
+    outline: 3px solid #1f6feb;
+    outline-offset: -3px;
+}
+
+/* Run form ---------------------------------------------------------------- */
+
+.case-two-form {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+}
+
+.case-two-form-fields {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    min-height: 0;
+    overflow: auto;
+    padding: 16px;
+}
+
+.case-two-form fieldset {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 12px 14px 14px;
+    border: 1px solid #d7dde6;
+    border-radius: 6px;
+}
+
+.case-two-form legend {
+    padding: 0 6px;
+    color: #4d5a6a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.case-two-form label {
+    display: grid;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.case-two-form input,
+.case-two-form select {
+    width: 100%;
+    padding: 8px 9px;
+    border: 1px solid #98a4b3;
+    border-radius: 4px;
+    background: #ffffff;
+    font-weight: 400;
+}
+
+.case-two-form input:focus-visible,
+.case-two-form select:focus-visible {
+    outline: 3px solid #1f6feb;
+    outline-offset: 1px;
+}
+
+.case-two-field-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.case-two-form-actions {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid #d7dde6;
+    background: #f5f7fa;
+}
+
+.case-two-run {
+    flex: 1 1 auto;
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1px solid #1f6feb;
+    border-radius: 5px;
+    background: #1f6feb;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.case-two-run:hover:not(:disabled) {
+    background: #1a5fd0;
+}
+
+.case-two-run:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.case-two-abort {
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1px solid #d13438;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #d13438;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.case-two-abort:hover {
+    background: #fdecec;
+}
+
+/* History ----------------------------------------------------------------- */
+
+.case-two-history {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    min-height: 0;
+}
+
+.case-two-history-hint {
+    margin: 0;
+    padding: 14px 16px 10px;
+    color: #4d5a6a;
+    font-size: 13px;
+}
+
+.case-two-history-list {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    min-height: 0;
+    margin: 0;
+    padding: 0 16px 16px;
+    overflow: auto;
+    list-style: none;
+}
+
+.case-two-history-list button {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d7dde6;
+    border-radius: 6px;
+    background: #ffffff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.case-two-history-list button:hover {
+    border-color: #9db4d8;
+    background: #f5f8fd;
+}
+
+.case-two-history-list button.is-selected {
+    border-color: #1f6feb;
+    background: #eaf2fe;
+}
+
+.case-two-history-list button:focus-visible {
+    outline: 3px solid #1f6feb;
+    outline-offset: 1px;
+}
+
+.case-two-history-list code {
+    overflow-wrap: anywhere;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+
+.case-two-history-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #4d5a6a;
+    font-size: 12px;
+}
+
+.case-two-return-live {
+    margin: 0 16px 16px;
+    padding: 9px 14px;
+    border: 1px solid #98a4b3;
+    border-radius: 5px;
+    background: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.case-two-return-live:hover {
+    background: #eef1f5;
+}
+
+/* Right-hand views -------------------------------------------------------- */
+
+.case-two-right {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+        'stream suggestion'
+        'motors motors';
+    min-height: 0;
+    gap: 16px;
+}
+
+.case-two-view--stream {
+    grid-area: stream;
+}
+.case-two-view--motors {
+    grid-area: motors;
+}
+.case-two-view--suggestion {
+    grid-area: suggestion;
+}
+
+.case-two-view {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid #c8d1dc;
+    border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.case-two-view > header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e1e6ed;
+    background: #f5f7fa;
+}
+
+.case-two-view h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.case-two-view-meta {
+    color: #4d5a6a;
+    font-size: 12px;
+}
+
+.case-two-plot {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+}
+
+/*
+ * Plotly measures this box and writes an explicit pixel size back into it.
+ * Taking the box out of flow keeps that written-back size from feeding into the
+ * grid row that produced it.
+ */
+.case-two-plot-inner {
+    position: absolute;
+    inset: 8px;
+    overflow: hidden;
+}
+
+.case-two-plot-inner .case-two-heatmap,
+.case-two-plot-inner .case-two-scatter,
+.case-two-plot-inner .case-two-contour {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+}
+
+.case-two-empty {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 20px;
+    color: #7a8798;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Footer ------------------------------------------------------------------ */
+
+.case-two-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    padding: 10px 22px;
+    border-top: 1px solid #c8d1dc;
+    background: #ffffff;
+    color: #4d5a6a;
+    font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+    .case-two-page {
+        height: auto;
+    }
+    .case-two-body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .case-two-left {
+        min-height: 460px;
+    }
+    .case-two-right {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: repeat(3, 320px);
+        grid-template-areas:
+            'stream'
+            'suggestion'
+            'motors';
+    }
+}

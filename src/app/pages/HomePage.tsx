@@ -22,6 +22,10 @@ export default function HomePage() {
                     <span>Case 1</span>
                     <span aria-hidden="true">↗</span>
                 </Link>
+                <Link className="home-page__choice home-page__choice--case" to="/case-2">
+                    <span>Case 2</span>
+                    <span aria-hidden="true">↗</span>
+                </Link>
             </nav>
         </main>
     );
