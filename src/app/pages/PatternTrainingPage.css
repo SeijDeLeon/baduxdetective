@@ -43,23 +43,20 @@
 }
 
 .pattern-training-home-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    width: 27px;
-    height: 27px;
-    border: 1px solid #263c3b;
-    border-radius: 4px;
+    gap: 7px;
     color: #203d3d;
-    background: #f3eedc;
-    box-shadow: 1px 1px 0 #263c3b;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     text-decoration: none;
 }
 
 .pattern-training-home-link:hover {
-    background: #fffaf0;
-    transform: translateY(-1px);
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .pattern-training-home-link:focus-visible {
@@ -589,9 +586,6 @@
 }
 .pure-black-pattern .pattern-training-home-link {
     color: #fff;
-    border-color: #fff;
-    background: #000;
-    box-shadow: 2px 2px 0 #fff;
 }
 .pure-black-pattern .pattern-training-header h1 {
     text-shadow: none;

@@ -3,7 +3,9 @@ import { Link } from 'react-router';
 export default function HomePage() {
     return (
         <main className="home-page">
-            <h1>UX Detective</h1>
+            <section className="home-page__hero" aria-labelledby="home-page-title">
+                <h1 id="home-page-title">Bad UX Detective</h1>
+            </section>
             <nav className="home-page__choices" aria-label="Choose an investigation">
                 <Link className="home-page__choice" to="/pattern-training">
                     <span>Pattern Training</span>

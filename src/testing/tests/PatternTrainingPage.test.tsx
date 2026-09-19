@@ -27,7 +27,7 @@ describe('pattern solutions', () => {
         render(<PatternTrainingPage />);
 
         expect(screen.getByRole('heading', { name: 'Pattern Training' })).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/');
+        expect(screen.getByRole('link', { name: 'Bad UX Detective' })).toHaveAttribute('href', '/');
         expect(
             screen.getByText(/spot the weak interaction and compare it to a stronger alternative/i),
         ).toBeInTheDocument();

@@ -1046,13 +1046,12 @@ export default function PatternTrainingPage() {
                 <div className="pattern-training-header-inner">
                     <div className="pattern-training-header-title">
                         <div className="pattern-training-header-meta">
-                            <p className="eyebrow">UX Detective</p>
                             <a
                                 className="pattern-training-home-link"
                                 href="/"
-                                aria-label="Back to home"
                                 title="Back to home"
                             >
+                                <span>Bad UX Detective</span>
                                 <Home size={15} strokeWidth={2.5} aria-hidden="true" />
                             </a>
                         </div>
