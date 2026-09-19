@@ -1,30 +1,26 @@
-/*
- * Case 2 is the exhibit, so the problems below are deliberate. The repaired
- * version of this same screen lives in Case2SolutionPage.css.
- */
-
-.case-two-page {
+.case-two-solution-page {
     display: grid;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
     min-height: 100vh;
     color: #1b2430;
     background: #eef1f5;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.case-two-page * {
+.case-two-solution-page * {
     box-sizing: border-box;
 }
 
-.case-two-page button,
-.case-two-page input,
-.case-two-page select {
+.case-two-solution-page button,
+.case-two-solution-page input,
+.case-two-solution-page select {
     font: inherit;
 }
 
 /* Header ------------------------------------------------------------------ */
 
-.case-two-header {
+.case-two-solution-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -35,12 +31,12 @@
     background: #ffffff;
 }
 
-.case-two-header-title {
+.case-two-solution-header-title {
     display: grid;
     gap: 4px;
 }
 
-.case-two-home-link {
+.case-two-solution-home-link {
     display: inline-flex;
     width: fit-content;
     align-items: center;
@@ -53,18 +49,18 @@
     text-decoration: none;
 }
 
-.case-two-home-link:hover {
+.case-two-solution-home-link:hover {
     color: #1b2430;
     text-decoration: underline;
 }
 
-.case-two-header h1 {
+.case-two-solution-header h1 {
     margin: 0;
     font-size: 22px;
     font-weight: 700;
 }
 
-.case-two-status {
+.case-two-solution-status {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -74,7 +70,7 @@
     font-size: 13px;
 }
 
-.case-two-status code {
+.case-two-solution-status code {
     padding: 3px 8px;
     border-radius: 4px;
     background: #eef1f5;
@@ -82,7 +78,7 @@
     font-size: 12px;
 }
 
-.case-two-status-dot {
+.case-two-solution-status-dot {
     display: inline-block;
     width: 9px;
     height: 9px;
@@ -90,49 +86,45 @@
     background: #8b97a6;
 }
 
-.case-two-status-dot--running {
+.case-two-solution-status-dot--running {
     background: #1f9d55;
 }
 
-.case-two-status-dot--complete {
+.case-two-solution-status-dot--complete {
     background: #1f6feb;
 }
 
-.case-two-status-dot--aborted {
+.case-two-solution-status-dot--aborted {
     background: #d13438;
 }
 
 /* Body -------------------------------------------------------------------- */
 
-.case-two-body {
+.case-two-solution-body {
     display: grid;
     grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
-    align-items: start;
+    min-height: 0;
     gap: 16px;
     padding: 16px;
 }
 
-.case-two-left {
-    /*
-     * Fixed to the viewport while the form inside is far taller, so the Run
-     * button at the end of the field list sits below the fold.
-     */
+.case-two-solution-left {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    height: calc(100vh - 140px);
+    min-height: 0;
     border: 1px solid #c8d1dc;
     border-radius: 8px;
     background: #ffffff;
     overflow: hidden;
 }
 
-.case-two-tabs {
+.case-two-solution-tabs {
     display: flex;
     border-bottom: 1px solid #c8d1dc;
     background: #f5f7fa;
 }
 
-.case-two-tabs button {
+.case-two-solution-tabs button {
     flex: 1 1 0;
     padding: 12px 8px;
     border: 0;
@@ -143,43 +135,66 @@
     cursor: pointer;
 }
 
-.case-two-tabs button:hover {
+.case-two-solution-tabs button:hover {
     color: #1b2430;
     background: #eaeef4;
 }
 
-.case-two-tabs button.is-active {
+.case-two-solution-tabs button.is-active {
     color: #1f6feb;
     border-bottom-color: #1f6feb;
     background: #ffffff;
 }
 
-.case-two-tabs button:focus-visible {
+.case-two-solution-tabs button:focus-visible {
     outline: 3px solid #1f6feb;
     outline-offset: -3px;
 }
 
 /* Run form ---------------------------------------------------------------- */
 
-/* One flat vertical stack: no grouping, no paired fields, no pinned actions. */
-.case-two-form {
+.case-two-solution-form {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+}
+
+.case-two-solution-form-fields {
     display: grid;
     align-content: start;
-    gap: 14px;
+    gap: 16px;
     min-height: 0;
     overflow: auto;
     padding: 16px;
 }
 
-.case-two-form label {
+.case-two-solution-form fieldset {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 12px 14px 14px;
+    border: 1px solid #d7dde6;
+    border-radius: 6px;
+}
+
+.case-two-solution-form legend {
+    padding: 0 6px;
+    color: #4d5a6a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.case-two-solution-form label {
     display: grid;
     gap: 5px;
     font-size: 13px;
     font-weight: 600;
 }
 
-.case-two-form input[type='number'],
-.case-two-form select {
+.case-two-solution-form input,
+.case-two-solution-form select {
     width: 100%;
     padding: 8px 9px;
     border: 1px solid #98a4b3;
@@ -188,38 +203,28 @@
     font-weight: 400;
 }
 
-.case-two-form input:focus-visible,
-.case-two-form select:focus-visible {
+.case-two-solution-form input:focus-visible,
+.case-two-solution-form select:focus-visible {
     outline: 3px solid #1f6feb;
     outline-offset: 1px;
 }
 
-.case-two-radio-group {
+.case-two-solution-field-pair {
     display: grid;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    border: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
-.case-two-radio-group legend {
-    padding: 0;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.case-two-radio-group label {
+.case-two-solution-form-actions {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 400;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid #d7dde6;
+    background: #f5f7fa;
 }
 
-.case-two-radio-group input {
-    margin: 0;
-}
-
-.case-two-run {
+.case-two-solution-run {
+    flex: 1 1 auto;
     min-height: 44px;
     padding: 10px 18px;
     border: 1px solid #1f6feb;
@@ -230,16 +235,16 @@
     cursor: pointer;
 }
 
-.case-two-run:hover:not(:disabled) {
+.case-two-solution-run:hover:not(:disabled) {
     background: #1a5fd0;
 }
 
-.case-two-run:disabled {
+.case-two-solution-run:disabled {
     opacity: 0.55;
     cursor: default;
 }
 
-.case-two-abort {
+.case-two-solution-abort {
     min-height: 44px;
     padding: 10px 18px;
     border: 1px solid #d13438;
@@ -250,35 +255,39 @@
     cursor: pointer;
 }
 
-.case-two-abort:hover {
+.case-two-solution-abort:hover {
     background: #fdecec;
-}
-
-/* The only feedback: no field is marked, and it sits below the fold. */
-.case-two-form-message {
-    margin: 0;
-    color: #8a6d3b;
-    font-size: 13px;
 }
 
 /* History ----------------------------------------------------------------- */
 
-.case-two-history {
+.case-two-solution-history {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     min-height: 0;
-    overflow: auto;
 }
 
-.case-two-history-list {
+.case-two-solution-history-hint {
+    margin: 0;
+    padding: 14px 16px 10px;
+    color: #4d5a6a;
+    font-size: 13px;
+}
+
+.case-two-solution-history-list {
     display: grid;
     align-content: start;
     gap: 8px;
+    min-height: 0;
     margin: 0;
-    padding: 16px;
+    padding: 0 16px 16px;
+    overflow: auto;
     list-style: none;
 }
 
-.case-two-history-list button {
-    display: block;
+.case-two-solution-history-list button {
+    display: grid;
+    gap: 6px;
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #d7dde6;
@@ -288,58 +297,84 @@
     cursor: pointer;
 }
 
-.case-two-history-list button:hover {
+.case-two-solution-history-list button:hover {
     border-color: #9db4d8;
     background: #f5f8fd;
 }
 
-.case-two-history-list button.is-selected {
+.case-two-solution-history-list button.is-selected {
     border-color: #1f6feb;
     background: #eaf2fe;
 }
 
-.case-two-history-list button:focus-visible {
+.case-two-solution-history-list button:focus-visible {
     outline: 3px solid #1f6feb;
     outline-offset: 1px;
 }
 
-.case-two-history-list code {
+.case-two-solution-history-list code {
     overflow-wrap: anywhere;
     font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
     font-size: 12px;
 }
 
+.case-two-solution-history-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #4d5a6a;
+    font-size: 12px;
+}
+
+.case-two-solution-return-live {
+    margin: 0 16px 16px;
+    padding: 9px 14px;
+    border: 1px solid #98a4b3;
+    border-radius: 5px;
+    background: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.case-two-solution-return-live:hover {
+    background: #eef1f5;
+}
+
 /* Right-hand views -------------------------------------------------------- */
 
-.case-two-right {
+.case-two-solution-right {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+        'stream suggestion'
+        'motors motors';
+    min-height: 0;
     gap: 16px;
 }
 
-/*
- * Heavy slab borders on every panel, and the last panel is tall enough to push
- * past the bottom of the window so the page always scrolls vertically.
- */
-.case-two-view {
+.case-two-solution-view--stream {
+    grid-area: stream;
+}
+.case-two-solution-view--motors {
+    grid-area: motors;
+}
+.case-two-solution-view--suggestion {
+    grid-area: suggestion;
+}
+
+.case-two-solution-view {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     min-width: 0;
-    border: 12px solid #000000;
+    min-height: 0;
+    border: 1px solid #c8d1dc;
+    border-radius: 8px;
     background: #ffffff;
     overflow: hidden;
 }
 
-.case-two-view--stream,
-.case-two-view--suggestion {
-    height: 340px;
-}
-
-.case-two-view--motors {
-    height: calc(100vh - 230px);
-}
-
-.case-two-view > header {
+.case-two-solution-view > header {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -350,16 +385,22 @@
     background: #f5f7fa;
 }
 
-.case-two-view h2 {
+.case-two-solution-view h2 {
     margin: 0;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.02em;
 }
 
-.case-two-view-meta {
+.case-two-solution-view-meta {
     color: #4d5a6a;
     font-size: 12px;
+}
+
+.case-two-solution-plot {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
 }
 
 /*
@@ -367,27 +408,21 @@
  * Taking the box out of flow keeps that written-back size from feeding into the
  * grid row that produced it.
  */
-.case-two-plot {
-    position: relative;
-    min-width: 0;
-    min-height: 0;
-}
-
-.case-two-plot-inner {
+.case-two-solution-plot-inner {
     position: absolute;
     inset: 8px;
     overflow: hidden;
 }
 
-.case-two-plot-inner .case-two-heatmap,
-.case-two-plot-inner .case-two-scatter,
-.case-two-plot-inner .case-two-contour {
+.case-two-solution-plot-inner .case-two-solution-heatmap,
+.case-two-solution-plot-inner .case-two-solution-scatter,
+.case-two-solution-plot-inner .case-two-solution-contour {
     width: 100%;
     height: 100%;
     max-height: 100%;
 }
 
-.case-two-empty {
+.case-two-solution-empty {
     display: grid;
     place-items: center;
     height: 100%;
@@ -399,7 +434,7 @@
 
 /* Footer ------------------------------------------------------------------ */
 
-.case-two-footer {
+.case-two-solution-footer {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -413,10 +448,21 @@
 }
 
 @media (max-width: 1100px) {
-    .case-two-body {
+    .case-two-solution-page {
+        height: auto;
+    }
+    .case-two-solution-body {
         grid-template-columns: minmax(0, 1fr);
     }
-    .case-two-left {
-        height: 520px;
+    .case-two-solution-left {
+        min-height: 460px;
+    }
+    .case-two-solution-right {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: repeat(3, 320px);
+        grid-template-areas:
+            'stream'
+            'suggestion'
+            'motors';
     }
 }

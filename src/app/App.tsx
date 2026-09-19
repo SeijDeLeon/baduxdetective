@@ -4,6 +4,7 @@ import './App.css';
 import './pages/WorkshopPages.css';
 import './pages/WorkshopPages2.css';
 import Case2Page from './pages/Case2Page';
+import Case2SolutionPage from './pages/Case2SolutionPage';
 import HomePage from './pages/HomePage';
 import Page1 from './pages/Page1';
 import Page2 from './pages/Page2';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/page-8" element={<Page8 />} />
             <Route path="/pattern-training" element={<PatternTrainingPage />} />
             <Route path="/case-2" element={<Case2Page />} />
+            <Route path="/case-2-solution" element={<Case2SolutionPage />} />
         </Routes>
     );
 }

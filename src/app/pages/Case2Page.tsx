@@ -4,7 +4,6 @@ import { Home } from 'lucide-react';
 import PlotlyHeatmap from '@/components/PlotlyHeatmap';
 import PlotlyScatter from '@/components/PlotlyScatter';
 import {
-    DEFAULT_SETTINGS,
     DETECTOR_CHOICES,
     MOTOR_CHOICES,
     PRESET_HISTORY,
@@ -25,6 +24,35 @@ type LeftTab = 'run' | 'history';
 /** Which run the right-hand views are showing. */
 type Selection = { kind: 'live' } | { kind: 'history'; runId: string };
 
+/**
+ * The form holds raw strings so a field can be genuinely empty. Several start
+ * blank, which is what makes the vague "fill in all required inputs" message
+ * reachable.
+ */
+type FormValues = {
+    motorX: string;
+    motorY: string;
+    detector: string;
+    xStart: string;
+    xStop: string;
+    yStart: string;
+    yStop: string;
+    points: string;
+    exposureSeconds: string;
+};
+
+const EMPTY_FORM: FormValues = {
+    motorX: '',
+    motorY: 'sample_y',
+    detector: '',
+    xStart: '-2',
+    xStop: '2',
+    yStart: '-2',
+    yStop: '2',
+    points: '24',
+    exposureSeconds: '',
+};
+
 const STREAM_INTERVAL_MS = 220;
 
 /**
@@ -32,11 +60,12 @@ const STREAM_INTERVAL_MS = 220;
  * given, so a shared constant would keep Plotly's own computed width/height and
  * override the measured container size on every later render.
  */
-function plotLayout() {
+function plotLayout(darkBackground: boolean) {
     return {
         showlegend: true,
         legend: { orientation: 'h' as const, x: 0, y: 1.14 },
         margin: { l: 55, r: 20, t: 28, b: 46 },
+        ...(darkBackground ? { plot_bgcolor: '#000000', paper_bgcolor: '#000000' } : {}),
     };
 }
 
@@ -53,9 +82,32 @@ function stampNow() {
     );
 }
 
+/** Every field must be filled in and every number must parse. */
+function toSettings(values: FormValues): ScanSettings | null {
+    const numbers = {
+        xStart: Number(values.xStart),
+        xStop: Number(values.xStop),
+        yStart: Number(values.yStart),
+        yStop: Number(values.yStop),
+        points: Number(values.points),
+        exposureSeconds: Number(values.exposureSeconds),
+    };
+    const blank = Object.values(values).some((value) => value.trim() === '');
+    const unparsed = Object.values(numbers).some((value) => !Number.isFinite(value));
+    if (blank || unparsed) return null;
+    if (numbers.points < 2 || numbers.exposureSeconds <= 0) return null;
+    return {
+        motorX: values.motorX,
+        motorY: values.motorY,
+        detector: values.detector,
+        ...numbers,
+    };
+}
+
 export default function Case2Page() {
     const [tab, setTab] = useState<LeftTab>('run');
-    const [settings, setSettings] = useState<ScanSettings>(DEFAULT_SETTINGS);
+    const [values, setValues] = useState<FormValues>(EMPTY_FORM);
+    const [formMessage, setFormMessage] = useState('');
     const [history, setHistory] = useState<RunRecord[]>(PRESET_HISTORY);
     const [liveRun, setLiveRun] = useState<RunRecord | null>(null);
     const [acquiredCount, setAcquiredCount] = useState(0);
@@ -93,17 +145,15 @@ export default function Case2Page() {
     }, [acquiredCount, isLiveView, shownRun]);
 
     const latestPoint = shownPoints.length > 0 ? shownPoints[shownPoints.length - 1] : null;
-    const shownSettings = shownRun?.settings ?? settings;
+    const shownSettings = shownRun?.settings ?? null;
 
     const surface = useMemo(
-        () => buildAcquisitionSurface(shownSettings, shownPoints),
+        () => (shownSettings ? buildAcquisitionSurface(shownSettings, shownPoints) : null),
         [shownPoints, shownSettings],
     );
 
     const best = bestPoint(shownPoints);
 
-    // Memoised so the plots keep their identity between renders: PlotlyScatter is
-    // memoised, and rebuilding these arrays every render would defeat that.
     const motorTraces = useMemo(
         () => [
             {
@@ -111,7 +161,7 @@ export default function Case2Page() {
                 y: shownPoints.map((point) => point.x),
                 type: 'scatter' as const,
                 mode: 'lines+markers' as const,
-                name: shownSettings.motorX,
+                name: shownSettings?.motorX ?? 'motor 1',
                 line: { color: '#1f6feb' },
                 marker: { color: '#1f6feb', size: 6 },
             },
@@ -120,68 +170,76 @@ export default function Case2Page() {
                 y: shownPoints.map((point) => point.y),
                 type: 'scatter' as const,
                 mode: 'lines+markers' as const,
-                name: shownSettings.motorY,
+                name: shownSettings?.motorY ?? 'motor 2',
                 line: { color: '#d9822b' },
                 marker: { color: '#d9822b', size: 6 },
             },
         ],
-        [shownPoints, shownSettings.motorX, shownSettings.motorY],
+        [shownPoints, shownSettings],
     );
 
     const suggestionTraces = useMemo(
-        () => [
-            {
-                x: surface.x,
-                y: surface.y,
-                z: surface.z,
-                type: 'contour' as const,
-                colorscale: 'Viridis' as const,
-                contours: { coloring: 'heatmap' as const },
-                showscale: false,
-                hoverinfo: 'skip' as const,
-                name: 'Expected value',
-            },
-            {
-                x: shownPoints.map((point) => point.x),
-                y: shownPoints.map((point) => point.y),
-                type: 'scatter' as const,
-                mode: 'markers' as const,
-                name: 'Measured',
-                marker: {
-                    color: 'rgba(255,255,255,0.85)',
-                    size: 6,
-                    line: { color: '#1b2430', width: 1 },
-                },
-            },
-            {
-                x: [surface.suggestion.x],
-                y: [surface.suggestion.y],
-                type: 'scatter' as const,
-                mode: 'markers' as const,
-                name: 'Suggested next',
-                marker: {
-                    color: '#ff4d6d',
-                    size: 15,
-                    symbol: 'x' as const,
-                    line: { color: '#ffffff', width: 1.5 },
-                },
-            },
-        ],
+        () =>
+            surface === null
+                ? []
+                : [
+                      {
+                          x: surface.x,
+                          y: surface.y,
+                          z: surface.z,
+                          type: 'contour' as const,
+                          colorscale: 'Viridis' as const,
+                          contours: { coloring: 'heatmap' as const },
+                          showscale: false,
+                          hoverinfo: 'skip' as const,
+                          name: 'Expected value',
+                      },
+                      {
+                          x: shownPoints.map((point) => point.x),
+                          y: shownPoints.map((point) => point.y),
+                          type: 'scatter' as const,
+                          mode: 'markers' as const,
+                          name: 'Measured',
+                          marker: {
+                              color: 'rgba(255,255,255,0.85)',
+                              size: 6,
+                              line: { color: '#1b2430', width: 1 },
+                          },
+                      },
+                      {
+                          x: [surface.suggestion.x],
+                          y: [surface.suggestion.y],
+                          type: 'scatter' as const,
+                          mode: 'markers' as const,
+                          name: 'Suggested next',
+                          marker: {
+                              color: '#ff4d6d',
+                              size: 15,
+                              symbol: 'x' as const,
+                              line: { color: '#ffffff', width: 1.5 },
+                          },
+                      },
+                  ],
         [shownPoints, surface],
     );
 
     function startRun(event: FormEvent) {
         event.preventDefault();
+        const settings = toSettings(values);
+        if (settings === null) {
+            setFormMessage('please fill in all required inputs before running');
+            return;
+        }
+        setFormMessage('');
         const seed = nextSeed.current++;
-        const run: RunRecord = {
+        setLiveRun({
             id: buildRunId(seed),
             startedAt: stampNow(),
             status: 'running',
             settings,
             points: buildScanPoints(settings, seed),
             seed,
-        };
-        setLiveRun(run);
+        });
         setAcquiredCount(0);
         setRunning(true);
         setSelection({ kind: 'live' });
@@ -199,9 +257,10 @@ export default function Case2Page() {
         setHistory((current) => [stopped, ...current]);
     }
 
-    function openHistoryRun(runId: string) {
-        setSelection({ kind: 'history', runId });
-    }
+    // The detector panel takes up no space at all until there is a frame to
+    // draw, so the whole right-hand column jumps the moment a run starts or a
+    // history entry is picked.
+    const hasStream = latestPoint !== null && shownSettings !== null;
 
     return (
         <main className="case-two-page">
@@ -242,39 +301,70 @@ export default function Case2Page() {
 
                     {tab === 'run' ? (
                         <RunPanel
-                            settings={settings}
-                            onChange={setSettings}
+                            values={values}
+                            onChange={setValues}
                             onSubmit={startRun}
                             onAbort={abortRun}
                             running={running}
+                            message={formMessage}
                         />
                     ) : (
                         <HistoryPanel
                             history={history}
                             selectedId={selection.kind === 'history' ? selection.runId : null}
-                            onSelect={openHistoryRun}
-                            onReturnToLive={() => setSelection({ kind: 'live' })}
-                            hasLiveRun={liveRun !== null}
+                            onSelect={(runId) => setSelection({ kind: 'history', runId })}
                         />
                     )}
                 </section>
 
                 <section className="case-two-right" aria-label="Scan views">
-                    <article className="case-two-view case-two-view--stream">
+                    {hasStream && (
+                        <article className="case-two-view case-two-view--stream">
+                            <header>
+                                <h2>Detector stream</h2>
+                                <span className="case-two-view-meta">
+                                    {shownSettings.detector}
+                                    {isLiveView && running ? ' · streaming' : ' · idle'}
+                                </span>
+                            </header>
+                            <div className="case-two-plot">
+                                <div className="case-two-plot-inner">
+                                    <DetectorStream
+                                        settings={shownSettings}
+                                        point={latestPoint}
+                                        streaming={isLiveView && running}
+                                    />
+                                </div>
+                            </div>
+                        </article>
+                    )}
+
+                    <article className="case-two-view case-two-view--suggestion">
                         <header>
-                            <h2>Detector stream</h2>
+                            <h2>Next best position</h2>
                             <span className="case-two-view-meta">
-                                {shownSettings.detector}
-                                {isLiveView && running ? ' · streaming' : ' · idle'}
+                                {surface === null || shownSettings === null
+                                    ? 'awaiting first acquisition'
+                                    : `${shownSettings.motorX} ${formatNumber(surface.suggestion.x)}, ` +
+                                      `${shownSettings.motorY} ${formatNumber(surface.suggestion.y)}`}
                             </span>
                         </header>
                         <div className="case-two-plot">
                             <div className="case-two-plot-inner">
-                                <DetectorStream
-                                    settings={shownSettings}
-                                    point={latestPoint}
-                                    streaming={isLiveView && running}
-                                />
+                                {surface === null || shownSettings === null ? (
+                                    <p className="case-two-empty">
+                                        The suggestion surface appears once the scan has measured
+                                        its first point.
+                                    </p>
+                                ) : (
+                                    <PlotlyScatter
+                                        className="case-two-contour"
+                                        xAxisTitle={shownSettings.motorX}
+                                        yAxisTitle={shownSettings.motorY}
+                                        data={suggestionTraces}
+                                        layout={plotLayout(false)}
+                                    />
+                                )}
                             </div>
                         </div>
                     </article>
@@ -293,38 +383,8 @@ export default function Case2Page() {
                                     xAxisTitle="Acquisition"
                                     yAxisTitle="Position"
                                     data={motorTraces}
-                                    layout={plotLayout()}
+                                    layout={plotLayout(true)}
                                 />
-                            </div>
-                        </div>
-                    </article>
-
-                    <article className="case-two-view case-two-view--suggestion">
-                        <header>
-                            <h2>Next best position</h2>
-                            <span className="case-two-view-meta">
-                                {shownPoints.length === 0
-                                    ? 'awaiting first acquisition'
-                                    : `${shownSettings.motorX} ${formatNumber(surface.suggestion.x)}, ` +
-                                      `${shownSettings.motorY} ${formatNumber(surface.suggestion.y)}`}
-                            </span>
-                        </header>
-                        <div className="case-two-plot">
-                            <div className="case-two-plot-inner">
-                                {shownPoints.length === 0 ? (
-                                    <p className="case-two-empty">
-                                        The suggestion surface appears once the scan has measured
-                                        its first point.
-                                    </p>
-                                ) : (
-                                    <PlotlyScatter
-                                        className="case-two-contour"
-                                        xAxisTitle={shownSettings.motorX}
-                                        yAxisTitle={shownSettings.motorY}
-                                        data={suggestionTraces}
-                                        layout={plotLayout()}
-                                    />
-                                )}
                             </div>
                         </div>
                     </article>
@@ -334,7 +394,7 @@ export default function Case2Page() {
             <footer className="case-two-footer">
                 <span>
                     Best so far:{' '}
-                    {best === null
+                    {best === null || shownSettings === null
                         ? '—'
                         : `${formatNumber(best.intensity, 3)} at ${shownSettings.motorX} ` +
                           `${formatNumber(best.x)}, ${shownSettings.motorY} ${formatNumber(best.y)}`}
@@ -346,8 +406,7 @@ export default function Case2Page() {
 }
 
 /**
- * Owns the stream tick itself. Re-rendering the whole page five times a second
- * starved the acquisition timer, so only this subtree repaints that often.
+ * Owns the stream tick itself, so a 220ms refresh does not re-render the page.
  */
 function DetectorStream({
     settings,
@@ -415,21 +474,27 @@ function RunStatusBanner({
     );
 }
 
+/**
+ * One ungrouped vertical stack of fields. The Run button sits at the end of
+ * that stack instead of a pinned footer, so it scrolls out of sight.
+ */
 function RunPanel({
-    settings,
+    values,
     onChange,
     onSubmit,
     onAbort,
     running,
+    message,
 }: {
-    settings: ScanSettings;
-    onChange: (settings: ScanSettings) => void;
+    values: FormValues;
+    onChange: (values: FormValues) => void;
     onSubmit: (event: FormEvent) => void;
     onAbort: () => void;
     running: boolean;
+    message: string;
 }) {
-    function update<Key extends keyof ScanSettings>(key: Key, value: ScanSettings[Key]) {
-        onChange({ ...settings, [key]: value });
+    function update<Key extends keyof FormValues>(key: Key, value: string) {
+        onChange({ ...values, [key]: value });
     }
 
     return (
@@ -440,145 +505,133 @@ function RunPanel({
             aria-labelledby="case-two-tab-run"
             onSubmit={onSubmit}
         >
-            <div className="case-two-form-fields">
-                <fieldset>
-                    <legend>Devices</legend>
-                    <label>
-                        Motor 1
-                        <select
-                            value={settings.motorX}
+            <fieldset className="case-two-radio-group">
+                <legend>Motor 1</legend>
+                {MOTOR_CHOICES.map((motor) => (
+                    <label key={motor}>
+                        <input
+                            type="radio"
+                            name="motorX"
+                            value={motor}
+                            checked={values.motorX === motor}
                             onChange={(event) => update('motorX', event.target.value)}
-                        >
-                            {MOTOR_CHOICES.map((motor) => (
-                                <option key={motor} value={motor}>
-                                    {motor}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                    <div className="case-two-field-pair">
-                        <label>
-                            Start
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={settings.xStart}
-                                onChange={(event) => update('xStart', Number(event.target.value))}
-                            />
-                        </label>
-                        <label>
-                            Stop
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={settings.xStop}
-                                onChange={(event) => update('xStop', Number(event.target.value))}
-                            />
-                        </label>
-                    </div>
-                    <label>
-                        Motor 2
-                        <select
-                            value={settings.motorY}
-                            onChange={(event) => update('motorY', event.target.value)}
-                        >
-                            {MOTOR_CHOICES.map((motor) => (
-                                <option key={motor} value={motor}>
-                                    {motor}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                    <div className="case-two-field-pair">
-                        <label>
-                            Start
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={settings.yStart}
-                                onChange={(event) => update('yStart', Number(event.target.value))}
-                            />
-                        </label>
-                        <label>
-                            Stop
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={settings.yStop}
-                                onChange={(event) => update('yStop', Number(event.target.value))}
-                            />
-                        </label>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend>Acquisition</legend>
-                    <label>
-                        Detector
-                        <select
-                            value={settings.detector}
-                            onChange={(event) => update('detector', event.target.value)}
-                        >
-                            {DETECTOR_CHOICES.map((detector) => (
-                                <option key={detector} value={detector}>
-                                    {detector}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                    <label>
-                        Number of points
-                        <input
-                            type="number"
-                            min={2}
-                            max={200}
-                            step="1"
-                            value={settings.points}
-                            onChange={(event) => update('points', Number(event.target.value))}
                         />
+                        {motor}
                     </label>
-                    <label>
-                        Exposure time (s)
-                        <input
-                            type="number"
-                            min={0.05}
-                            max={10}
-                            step="0.05"
-                            value={settings.exposureSeconds}
-                            onChange={(event) =>
-                                update('exposureSeconds', Number(event.target.value))
-                            }
-                        />
-                    </label>
-                </fieldset>
-            </div>
+                ))}
+            </fieldset>
 
-            <div className="case-two-form-actions">
-                {running && (
-                    <button type="button" className="case-two-abort" onClick={onAbort}>
-                        Abort
-                    </button>
-                )}
-                <button type="submit" className="case-two-run" disabled={running}>
-                    {running ? 'Running…' : 'Run'}
+            <label>
+                Start
+                <input
+                    type="number"
+                    step="0.1"
+                    value={values.xStart}
+                    onChange={(event) => update('xStart', event.target.value)}
+                />
+            </label>
+            <label>
+                Stop
+                <input
+                    type="number"
+                    step="0.1"
+                    value={values.xStop}
+                    onChange={(event) => update('xStop', event.target.value)}
+                />
+            </label>
+
+            <label>
+                Motor 2
+                <select
+                    value={values.motorY}
+                    onChange={(event) => update('motorY', event.target.value)}
+                >
+                    <option value="">—</option>
+                    {MOTOR_CHOICES.map((motor) => (
+                        <option key={motor} value={motor}>
+                            {motor}
+                        </option>
+                    ))}
+                </select>
+            </label>
+            <label>
+                Start
+                <input
+                    type="number"
+                    step="0.1"
+                    value={values.yStart}
+                    onChange={(event) => update('yStart', event.target.value)}
+                />
+            </label>
+            <label>
+                Stop
+                <input
+                    type="number"
+                    step="0.1"
+                    value={values.yStop}
+                    onChange={(event) => update('yStop', event.target.value)}
+                />
+            </label>
+
+            <label>
+                Detector
+                <select
+                    value={values.detector}
+                    onChange={(event) => update('detector', event.target.value)}
+                >
+                    <option value="">—</option>
+                    {DETECTOR_CHOICES.map((detector) => (
+                        <option key={detector} value={detector}>
+                            {detector}
+                        </option>
+                    ))}
+                </select>
+            </label>
+            <label>
+                Number of points
+                <input
+                    type="number"
+                    step="1"
+                    value={values.points}
+                    onChange={(event) => update('points', event.target.value)}
+                />
+            </label>
+            <label>
+                Exposure time (s)
+                <input
+                    type="number"
+                    step="0.05"
+                    value={values.exposureSeconds}
+                    onChange={(event) => update('exposureSeconds', event.target.value)}
+                />
+            </label>
+
+            {running && (
+                <button type="button" className="case-two-abort" onClick={onAbort}>
+                    Abort
                 </button>
-            </div>
+            )}
+            <button type="submit" className="case-two-run" disabled={running}>
+                {running ? 'Running…' : 'Run'}
+            </button>
+            {message !== '' && (
+                <p className="case-two-form-message" role="status">
+                    {message}
+                </p>
+            )}
         </form>
     );
 }
 
+/** Run ids and nothing else: no dates, no devices, no point counts, no hint. */
 function HistoryPanel({
     history,
     selectedId,
     onSelect,
-    onReturnToLive,
-    hasLiveRun,
 }: {
     history: RunRecord[];
     selectedId: string | null;
     onSelect: (runId: string) => void;
-    onReturnToLive: () => void;
-    hasLiveRun: boolean;
 }) {
     return (
         <div
@@ -587,9 +640,6 @@ function HistoryPanel({
             role="tabpanel"
             aria-labelledby="case-two-tab-history"
         >
-            <p className="case-two-history-hint">
-                Select a run id to load it into the views on the right.
-            </p>
             <ul className="case-two-history-list">
                 {history.map((run) => (
                     <li key={run.id}>
@@ -600,22 +650,10 @@ function HistoryPanel({
                             onClick={() => onSelect(run.id)}
                         >
                             <code>{run.id}</code>
-                            <span className="case-two-history-meta">
-                                <span
-                                    className={`case-two-status-dot case-two-status-dot--${run.status}`}
-                                />
-                                {run.startedAt} · {run.settings.motorX} × {run.settings.motorY} ·{' '}
-                                {run.points.length} pts
-                            </span>
                         </button>
                     </li>
                 ))}
             </ul>
-            {hasLiveRun && selectedId !== null && (
-                <button type="button" className="case-two-return-live" onClick={onReturnToLive}>
-                    Back to current run
-                </button>
-            )}
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import Case2Page from '../../app/pages/Case2Page';
+import Case2SolutionPage from '../../app/pages/Case2SolutionPage';
 import { PRESET_HISTORY, bestPoint, buildAcquisitionSurface } from '../../app/pages/case2ScanSim';
 
 // Plotly needs a real layout engine, so both plot components stand in as the
@@ -29,16 +29,21 @@ function openHistory() {
     fireEvent.click(screen.getByRole('tab', { name: 'History' }));
 }
 
-/** Runs the scan to completion by draining the per-acquisition timers. */
-function finishRun() {
-    act(() => {
-        vi.advanceTimersByTime(60000);
-    });
+/**
+ * Each acquisition timer is scheduled from an effect, so the clock has to be
+ * advanced once per point with a commit in between.
+ */
+function acquire(points: number) {
+    for (let index = 0; index < points; index++) {
+        act(() => {
+            vi.advanceTimersByTime(300);
+        });
+    }
 }
 
-describe('Case 2 scan console', () => {
+describe('Case 2 solution scan console', () => {
     it('starts on the Run tab with a form and a run button at the bottom', () => {
-        render(<Case2Page />);
+        render(<Case2SolutionPage />);
 
         expect(screen.getByRole('tab', { name: 'Run' })).toHaveAttribute('aria-selected', 'true');
         expect(screen.getByLabelText('Motor 1')).toHaveValue('sample_x');
@@ -51,7 +56,7 @@ describe('Case 2 scan console', () => {
     });
 
     it('acquires points one at a time and records the finished run in history', () => {
-        render(<Case2Page />);
+        render(<Case2SolutionPage />);
         fireEvent.change(screen.getByLabelText('Number of points'), { target: { value: '6' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
 
@@ -61,7 +66,7 @@ describe('Case 2 scan console', () => {
         });
         expect(screen.getByText('1 / 6 points')).toBeInTheDocument();
 
-        finishRun();
+        acquire(6);
         expect(screen.getByText('6 / 6 points')).toBeInTheDocument();
         expect(screen.getByText('complete')).toBeInTheDocument();
 
@@ -72,23 +77,21 @@ describe('Case 2 scan console', () => {
     });
 
     it('keeps only the acquired points when a run is aborted', () => {
-        render(<Case2Page />);
+        render(<Case2SolutionPage />);
         fireEvent.change(screen.getByLabelText('Number of points'), { target: { value: '10' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
-        act(() => {
-            vi.advanceTimersByTime(3 * 260 + 10);
-        });
+        acquire(3);
         fireEvent.click(screen.getByRole('button', { name: 'Abort' }));
 
         expect(screen.getByText('aborted')).toBeInTheDocument();
         expect(screen.getByText('3 / 3 points')).toBeInTheDocument();
         // A stopped run must not keep ticking.
-        finishRun();
+        acquire(5);
         expect(screen.getByText('3 / 3 points')).toBeInTheDocument();
     });
 
     it('ships pre-made history entries and loads one into the views when clicked', () => {
-        render(<Case2Page />);
+        render(<Case2SolutionPage />);
         openHistory();
 
         for (const run of PRESET_HISTORY) {
@@ -103,7 +106,7 @@ describe('Case 2 scan console', () => {
             screen.getByText(`${second.points.length} / ${second.points.length} points`),
         ).toBeInTheDocument();
         // The motor plot receives every point of the selected run.
-        expect(screen.getByTestId('case-two-scatter')).toHaveTextContent(
+        expect(screen.getByTestId('case-two-solution-scatter')).toHaveTextContent(
             String(second.points.length),
         );
 
@@ -118,7 +121,7 @@ describe('Case 2 scan console', () => {
     });
 
     it('labels the suggestion view with the position the surface picks', () => {
-        render(<Case2Page />);
+        render(<Case2SolutionPage />);
         openHistory();
         const run = PRESET_HISTORY[0];
         fireEvent.click(screen.getByText(run.id));
@@ -134,10 +137,10 @@ describe('Case 2 scan console', () => {
     });
 
     it('returns to the live run after viewing a history entry', () => {
-        render(<Case2Page />);
+        render(<Case2SolutionPage />);
         fireEvent.change(screen.getByLabelText('Number of points'), { target: { value: '4' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
-        finishRun();
+        acquire(4);
 
         openHistory();
         fireEvent.click(screen.getByText(PRESET_HISTORY[0].id));
@@ -148,8 +151,10 @@ describe('Case 2 scan console', () => {
     });
 
     it('shows a placeholder for the suggestion surface before the first point', () => {
-        render(<Case2Page />);
-        expect(screen.getByText(/appears once the scan has measured its first point/i)).toBeInTheDocument();
-        expect(screen.queryByTestId('case-two-contour')).not.toBeInTheDocument();
+        render(<Case2SolutionPage />);
+        expect(
+            screen.getByText(/appears once the scan has measured its first point/i),
+        ).toBeInTheDocument();
+        expect(screen.queryByTestId('case-two-solution-contour')).not.toBeInTheDocument();
     });
 });
