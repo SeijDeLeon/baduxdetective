@@ -31,19 +31,39 @@ body,
 }
 
 .home-page__hero {
+    position: relative;
+    display: grid;
+    place-items: start center;
     box-sizing: border-box;
     min-height: 0;
-    padding: clamp(48px, 8vh, 96px) 24px;
-    background: #eae5d2 url('./assets/images/lab-crime-scene.png') center / cover no-repeat;
+    padding: 20px;
+}
+
+.home-page__image {
+    display: block;
+    box-sizing: border-box;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 184px);
+    max-height: calc(100svh - 184px);
+    border: 2px solid #263c3b;
+    border-radius: 12px;
+    box-shadow: 6px 6px 0 #263c3b;
 }
 
 .home-page h1 {
+    position: absolute;
+    top: clamp(52px, 7vh, 88px);
+    left: 50%;
     margin: 0;
+    transform: translateX(-50%);
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: clamp(56px, 7.5vw, 112px);
+    font-size: clamp(56px, 7.5vw, 76px);
     font-weight: 700;
     letter-spacing: -0.055em;
     line-height: 1.05;
+    white-space: nowrap;
     text-shadow: 0 2px 0 #f3eedc;
 }
 
@@ -54,7 +74,6 @@ body,
     box-sizing: border-box;
     width: 100%;
     padding: 24px max(24px, calc((100% - 580px) / 2));
-    border-top: 2px solid #263c3b;
     background: #eae5d2;
 }
 
@@ -101,10 +120,23 @@ body,
     outline-offset: 7px;
 }
 
+@media (min-width: 1024px) {
+    .home-page h1 {
+        top: clamp(32px, 4vh, 48px);
+    }
+}
+
 @media (max-width: 520px) {
     .home-page__hero {
         min-height: 58svh;
-        padding-top: 48px;
+        padding: 12px;
+    }
+    .home-page__image {
+        box-shadow: 4px 4px 0 #263c3b;
+    }
+    .home-page h1 {
+        top: 52px;
+        white-space: normal;
     }
     .home-page__choices {
         grid-template-columns: 1fr;

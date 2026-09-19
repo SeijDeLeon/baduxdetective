@@ -1,9 +1,16 @@
 import { Link } from 'react-router';
 
+import labCrimeScene from '../assets/images/lab-crime-scene.png';
+
 export default function HomePage() {
     return (
         <main className="home-page">
             <section className="home-page__hero" aria-labelledby="home-page-title">
+                <img
+                    className="home-page__image"
+                    src={labCrimeScene}
+                    alt="An illustrated laboratory crime scene with a bull detective"
+                />
                 <h1 id="home-page-title">Bad UX Detective</h1>
             </section>
             <nav className="home-page__choices" aria-label="Choose an investigation">
