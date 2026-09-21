@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import PatternTrainingPage from '../../app/pages/PatternTrainingPage';
 
@@ -16,7 +17,7 @@ function next() {
     fireEvent.click(screen.getByRole('button', { name: 'Next pattern' }));
 }
 function openPattern(number: number) {
-    render(<PatternTrainingPage />);
+    render(<PatternTrainingPage />, { wrapper: MemoryRouter });
     for (let index = 1; index < number; index++) next();
     fireEvent.click(screen.getByRole('button', { name: 'Show solution' }));
     return within(screen.getByRole('region', { name: /^Solution:/ }));
@@ -24,7 +25,7 @@ function openPattern(number: number) {
 
 describe('pattern solutions', () => {
     it('shows a short intro and first-pattern guidance before the exercises begin', () => {
-        render(<PatternTrainingPage />);
+        render(<PatternTrainingPage />, { wrapper: MemoryRouter });
 
         expect(screen.getByRole('heading', { name: 'Pattern Training' })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: 'Bad UX Detective' })).toHaveAttribute('href', '/');
@@ -32,15 +33,16 @@ describe('pattern solutions', () => {
             screen.getByText(/spot the weak interaction and compare it to a stronger alternative/i),
         ).toBeInTheDocument();
         expect(
-            screen.getByText((content) =>
-                content.includes('Focus on whether the action looks clickable') &&
-                content.includes('how the interface guides your next move'),
+            screen.getByText(
+                (content) =>
+                    content.includes('Focus on whether the action looks clickable') &&
+                    content.includes('how the interface guides your next move'),
             ),
         ).toBeInTheDocument();
     });
 
     it('reveals and hides a solution for all 31 patterns, resetting on navigation', () => {
-        render(<PatternTrainingPage />);
+        render(<PatternTrainingPage />, { wrapper: MemoryRouter });
         for (let number = 1; number <= 31; number++) {
             expect(screen.getByText(`Pattern ${number} of 31`)).toBeInTheDocument();
             expect(screen.queryByRole('region', { name: /^Solution:/ })).not.toBeInTheDocument();
@@ -60,7 +62,7 @@ describe('pattern solutions', () => {
     }, 20000);
 
     it('keeps the original state when toggling and isolates solution interactions', () => {
-        render(<PatternTrainingPage />);
+        render(<PatternTrainingPage />, { wrapper: MemoryRouter });
         fireEvent.click(screen.getByRole('button', { name: 'Start Scan' }));
         fireEvent.click(screen.getByRole('button', { name: 'Show solution' }));
         const solution = within(screen.getByRole('region', { name: /^Solution:/ }));

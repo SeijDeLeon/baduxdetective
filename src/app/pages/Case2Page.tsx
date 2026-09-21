@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Home } from 'lucide-react';
+import { Link } from 'react-router';
 
 import PlotlyHeatmap from '@/components/PlotlyHeatmap';
 import PlotlyScatter from '@/components/PlotlyScatter';
@@ -266,10 +267,10 @@ export default function Case2Page() {
         <main className="case-two-page">
             <header className="case-two-header">
                 <div className="case-two-header-title">
-                    <a className="case-two-home-link" href="/" title="Back to home">
+                    <Link className="case-two-home-link" to="/" title="Back to home">
                         <span>Bad UX Detective</span>
                         <Home size={15} strokeWidth={2.5} aria-hidden="true" />
-                    </a>
+                    </Link>
                     <h1>Case 2 — Adaptive Scan Console</h1>
                 </div>
                 <RunStatusBanner

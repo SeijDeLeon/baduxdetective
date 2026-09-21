@@ -1,5 +1,6 @@
 import { useEffect, useState, type ComponentType, type DragEvent, type FormEvent } from 'react';
 import { Home } from 'lucide-react';
+import { Link } from 'react-router';
 
 import PlotlyHeatmap from '@/components/PlotlyHeatmap';
 import * as Solutions from './PatternSolutions';
@@ -1046,21 +1047,19 @@ export default function PatternTrainingPage() {
                 <div className="pattern-training-header-inner">
                     <div className="pattern-training-header-title">
                         <div className="pattern-training-header-meta">
-                            <a
+                            <Link
                                 className="pattern-training-home-link"
-                                href="/"
+                                to="/"
                                 title="Back to home"
                             >
                                 <span>Bad UX Detective</span>
                                 <Home size={15} strokeWidth={2.5} aria-hidden="true" />
-                            </a>
+                            </Link>
                         </div>
                         <h1>Pattern Training</h1>
                     </div>
                     <div className="pattern-training-header-copy">
-                        <p>
-                            Spot the weak interaction and compare it to a stronger alternative.
-                        </p>
+                        <p>Spot the weak interaction and compare it to a stronger alternative.</p>
                     </div>
                 </div>
             </header>
@@ -1072,11 +1071,14 @@ export default function PatternTrainingPage() {
                                 <div className="pattern-training-intro-card">
                                     <p className="pattern-training-intro-label">What to look for</p>
                                     <p>
-                                        Focus on whether the action looks clickable, what it conveys,
-                                        and how the interface guides your next move.
+                                        Focus on whether the action looks clickable, what it
+                                        conveys, and how the interface guides your next move.
                                     </p>
                                 </div>
-                                <div className="pattern-training-first-pattern-hint" aria-label="First example guide">
+                                <div
+                                    className="pattern-training-first-pattern-hint"
+                                    aria-label="First example guide"
+                                >
                                     <span className="pattern-training-first-pattern-hint-badge">
                                         Try this first
                                     </span>

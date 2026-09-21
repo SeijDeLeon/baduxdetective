@@ -807,8 +807,7 @@ export function KeyboardReordering() {
 }
 
 export function TruncatedText() {
-    const filename =
-        '2026-09-18_beamline-8.3.2_high-resolution-nickel-calibration_run-004281.h5';
+    const filename = '2026-09-18_beamline-8.3.2_high-resolution-nickel-calibration_run-004281.h5';
 
     return (
         <>

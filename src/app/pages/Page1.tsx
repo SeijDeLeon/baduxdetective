@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Home } from 'lucide-react';
+import { Link } from 'react-router';
 
 import { OphydTransportProvider } from '@/api/ophyd/OphydTransportProvider';
 import useOphydPVSocket from '@/api/ophyd/useOphydPVSocket';
@@ -266,10 +267,10 @@ function BeamlineConsole() {
         <main className="workshop-page console-page">
             <header className="console-header">
                 <div className="console-header-left">
-                    <a className="console-home-link" href="/" title="Back to home">
+                    <Link className="console-home-link" to="/" title="Back to home">
                         <span>Bad UX Detective</span>
                         <Home size={13} strokeWidth={2.5} aria-hidden="true" />
-                    </a>
+                    </Link>
                     <span className="console-online">
                         <i className="status-dot green" /> ONLINE
                     </span>

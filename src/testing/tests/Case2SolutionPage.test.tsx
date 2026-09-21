@@ -1,4 +1,5 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Case2SolutionPage from '../../app/pages/Case2SolutionPage';
 import { PRESET_HISTORY, bestPoint, buildAcquisitionSurface } from '../../app/pages/case2ScanSim';
@@ -43,7 +44,7 @@ function acquire(points: number) {
 
 describe('Case 2 solution scan console', () => {
     it('starts on the Run tab with a form and a run button at the bottom', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
 
         expect(screen.getByRole('tab', { name: 'Run' })).toHaveAttribute('aria-selected', 'true');
         expect(screen.getByLabelText('Motor 1')).toHaveValue('sample_x');
@@ -56,7 +57,7 @@ describe('Case 2 solution scan console', () => {
     });
 
     it('acquires points one at a time and records the finished run in history', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
         fireEvent.change(screen.getByLabelText('Number of points'), { target: { value: '6' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
 
@@ -77,7 +78,7 @@ describe('Case 2 solution scan console', () => {
     });
 
     it('keeps only the acquired points when a run is aborted', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
         fireEvent.change(screen.getByLabelText('Number of points'), { target: { value: '10' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
         acquire(3);
@@ -91,7 +92,7 @@ describe('Case 2 solution scan console', () => {
     });
 
     it('ships pre-made history entries and loads one into the views when clicked', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
         openHistory();
 
         for (const run of PRESET_HISTORY) {
@@ -121,7 +122,7 @@ describe('Case 2 solution scan console', () => {
     });
 
     it('labels the suggestion view with the position the surface picks', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
         openHistory();
         const run = PRESET_HISTORY[0];
         fireEvent.click(screen.getByText(run.id));
@@ -137,7 +138,7 @@ describe('Case 2 solution scan console', () => {
     });
 
     it('returns to the live run after viewing a history entry', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
         fireEvent.change(screen.getByLabelText('Number of points'), { target: { value: '4' } });
         fireEvent.click(screen.getByRole('button', { name: 'Run' }));
         acquire(4);
@@ -151,7 +152,7 @@ describe('Case 2 solution scan console', () => {
     });
 
     it('shows a placeholder for the suggestion surface before the first point', () => {
-        render(<Case2SolutionPage />);
+        render(<Case2SolutionPage />, { wrapper: MemoryRouter });
         expect(
             screen.getByText(/appears once the scan has measured its first point/i),
         ).toBeInTheDocument();
